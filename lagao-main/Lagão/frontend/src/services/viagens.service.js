@@ -1,14 +1,25 @@
-import axiosApi from "@/plugins/axios";
+import http from '@/plugins/axios'
 
-const viagensService = {
-    async getViagens() {
-        try {
-            const response = await axiosApi.get('/viagens')
-            return response.data
-        } catch (error) {
-            console.error(error)
-        }
-    }
+class ViagensService {
+  getAll() {
+    return http.get('/viagens')
+  }
+
+  get(id) {
+    return http.get(`/viagens/${id}`)
+  }
+
+  create(data) {
+    return http.post('/viagens', data)
+  }
+
+  update(id, data) {
+    return http.patch(`/viagens/${id}`, data)
+  }
+
+  delete(id) {
+    return http.delete(`/viagens/${id}`)
+  }
 }
 
-export default viagensService
+export default new ViagensService()

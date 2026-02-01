@@ -7,10 +7,12 @@ import { DepoimentosModule } from './depoimentos/depoimentos.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { HomePageModule } from './home-page/home-page.module';
 import { AgendaModule } from './agenda/agenda.module';
+import { EquipeModule } from './equipe/equipe.module';
+import { AuthModule } from './auth/auth.module';
 
 
 @Module({
-  imports: [CursosModule, CategoriaCursosModule, VolumeModule, ViagensModule, DepoimentosModule, HomePageModule, AgendaModule,
+  imports: [CursosModule, CategoriaCursosModule, VolumeModule, ViagensModule, DepoimentosModule, HomePageModule, EquipeModule, AuthModule, AgendaModule,
       TypeOrmModule.forRoot({
       type: 'postgres',
       host: '82.29.62.101',

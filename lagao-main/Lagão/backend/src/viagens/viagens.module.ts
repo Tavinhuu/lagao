@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 import { ViagensService } from './viagens.service';
 import { ViagensController } from './viagens.controller';
-import { Viagem } from './entities/viagem.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Volume } from 'src/volume/entities/volume.entity';
+import { Viagem } from './entities/viagem.entity';
+import { Volume } from 'src/volume/entities/volume.entity'; // <--- Importe isto
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Viagem, Volume])],
+  imports: [TypeOrmModule.forFeature([Viagem, Volume])], // <--- Adicione Volume aqui
   controllers: [ViagensController],
   providers: [ViagensService],
 })

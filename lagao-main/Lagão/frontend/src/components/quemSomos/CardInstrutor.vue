@@ -103,14 +103,17 @@ export default {
   },
   methods: {
     getAvatar(instrutor) {
-      // 1. Tenta usar a imagem do banco se existir
-      if (instrutor.imagem && instrutor.imagem.trim() !== "") {
-        return instrutor.imagem;
-      }
-      // 2. Se estiver vazia, retorna a padrão direto
-      return this.imagemPadrao;
+    // Backend (Volume)
+    if (instrutor.volume && instrutor.volume.url) {
+        return instrutor.volume.url;
     }
+    // Legado (Mock) ou link direto
+    if (instrutor.imagem && instrutor.imagem.trim() !== "") {
+      return instrutor.imagem;
+    }
+    return this.imagemPadrao;
   }
+}
 };
 </script>
 

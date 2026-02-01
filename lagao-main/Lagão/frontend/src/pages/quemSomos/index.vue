@@ -1,14 +1,14 @@
 <template>
-    <QuemSomos></QuemSomos>
+  <QueSomos />
 </template>
-  
-  <script>
-  import QuemSomos from '../../components/quemSomos/queSomos.vue'
 
-  export default {
-    name: 'IndexQuemSomos',
-    components: {
-      QuemSomos
-    }
+<script>
+import QueSomos from "@/components/quemSomos/queSomos.vue";
+
+export default {
+  name: "PageQuemSomos",
+  components: {
+    QueSomos
   }
-  </script>
+};
+</script>

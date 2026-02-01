@@ -5,10 +5,21 @@ import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "t
 @Entity({name: 'agenda'})
 export class Agenda {
     @PrimaryGeneratedColumn()
-    id:number
+    id: number;
 
     @Column({name:'data', type: 'timestamptz' })
     public data: Date;
+
+    // --- NOVOS CAMPOS LIVRES ---
+    @Column({name: 'titulo', type: 'varchar', nullable: true})
+    public titulo: string;
+
+    @Column({name: 'descricao', type: 'text', nullable: true})
+    public descricao: string;
+
+    @Column({name: 'local', type: 'varchar', nullable: true})
+    public local: string;
+    // ---------------------------
 
     @ManyToOne(()=> Curso, (curso) => curso.agendas, {eager:true, nullable: true})
     @JoinColumn({name: 'curso_id'})

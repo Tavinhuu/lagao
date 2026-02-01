@@ -1,182 +1,135 @@
 <template>
   <v-hover v-slot="{ hover }">
     <v-card 
-      class="rounded-xl overflow-hidden transition-swing"
-      :elevation="hover ? 16 : 4"
+      class="viagem-card rounded-xl overflow-hidden transition-swing"
+      :elevation="hover ? 12 : 2"
+      height="100%"
       color="#1E1E1E"
-      :class="{ 'on-hover': hover }"
-      style="border: 1px solid rgba(255,255,255,0.05);"
     >
-      <v-row no-gutters>
-        
-        <v-col cols="12" md="5" class="d-flex flex-column">
-          <div class="image-wrapper fill-height">
-            <v-img
-              :src="viagens.volume && viagens.volume.url ? viagens.volume.url : '@/assets/logo.png'"
-              height="100%"
-              min-height="300px"
-              cover
-              class="card-img"
-              :class="{ 'zoomed': hover }"
-            >
-              <template v-slot:placeholder>
-                <v-row class="fill-height ma-0" align="center" justify="center">
-                  <v-progress-circular indeterminate color="#D32F2F"></v-progress-circular>
-                </v-row>
-              </template>
-              
-              <div class="destination-badge">
-                <v-icon small color="white" class="mr-1">mdi-map-marker</v-icon>
-                {{ viagens.destino || 'Destino Incrível' }}
-              </div>
+      <div class="image-wrapper">
+        <v-img 
+          :src="imagemUrl" 
+          height="250px" 
+          cover
+          class="zoom-effect"
+          :class="{ 'zoomed': hover }"
+        >
+          <template v-slot:placeholder>
+             <v-row class="fill-height ma-0" align="center" justify="center">
+               <v-progress-circular indeterminate color="#D32F2F"></v-progress-circular>
+             </v-row>
+          </template>
+          <div class="gradient-overlay"></div>
+        </v-img>
 
-              <div class="d-md-none image-gradient"></div>
-            </v-img>
-          </div>
-        </v-col>
+        <div class="date-badge">
+          <v-icon small color="white" class="mr-1">mdi-calendar</v-icon>
+          <span class="font-weight-bold">{{ dataFormatada }}</span>
+        </div>
+      </div>
 
-        <v-col cols="12" md="7" class="d-flex flex-column">
-          <div class="pa-6 pa-md-8 flex-grow-1">
-            
-            <div class="d-flex flex-wrap align-center mb-4 gap-4 meta-row">
-              <div class="d-flex align-center mr-6 grey--text text--lighten-1">
-                <v-icon size="20" color="#D32F2F" class="mr-2">mdi-calendar-month</v-icon>
-                <span class="text-subtitle-2 font-weight-bold">{{ viagens.inicioViagem || 'A definir' }}</span>
-              </div>
-              <div class="d-flex align-center grey--text text--lighten-1">
-                <v-icon size="20" color="#D32F2F" class="mr-2">mdi-clock-outline</v-icon>
-                <span class="text-subtitle-2 font-weight-bold">{{ viagens.duracao || 'Dias' }}</span>
-              </div>
-            </div>
+      <div class="d-flex flex-column pa-5">
+        <div class="d-flex align-center mb-2">
+          <v-icon color="#D32F2F" small class="mr-2">mdi-map-marker</v-icon>
+          <span class="text-overline grey--text text--lighten-1">DESTINO REALIZADO</span>
+        </div>
 
-            <h3 class="text-h5 font-weight-black white--text mb-3 text-uppercase line-clamp-2">
-              {{ viagens.titulo }}
-            </h3>
+        <h3 class="text-h5 white--text font-weight-bold mb-3 line-clamp-2">
+          {{ viagem.destino }}
+        </h3>
 
-            <div class="grey--text text--lighten-1 text-body-2 line-clamp-4" style="line-height: 1.6;">
-              {{ viagens.descricao }}
-            </div>
-          </div>
+        <p class="grey--text text--lighten-1 body-2 line-clamp-3 mb-4">
+          {{ viagem.descricao }}
+        </p>
 
-          <div class="px-6 px-md-8 pb-6 pb-md-8 pt-0 mt-auto">
-            <v-divider class="grey darken-3 mb-4"></v-divider>
-            <v-btn
-              block
-              large
-              rounded
-              color="#D32F2F"
-              class="white--text font-weight-bold btn-glow"
-              :href="whatsappLink"
-              target="_blank"
-            >
-              <v-icon left>mdi-whatsapp</v-icon>
-              Reserva / Detalhes
-            </v-btn>
-          </div>
-        </v-col>
-
-      </v-row>
+        <div class="mt-auto pt-2 border-top">
+          <v-btn text block color="#D32F2F" class="px-0 justify-start hover-underline">
+            VER FOTOS E DETALHES <v-icon right small>mdi-arrow-right</v-icon>
+          </v-btn>
+        </div>
+      </div>
     </v-card>
   </v-hover>
 </template>
 
 <script>
 export default {
-  name: "CardViagem",
+  name: "CardViagens",
   props: {
-    viagens: {
+    viagem: {
       type: Object,
-      required: true,
-      default: () => ({})
-    },
+      required: true
+    }
   },
   computed: {
-    whatsappLink() {
-      const telefone = "5561998385830"; 
-      const mensagem = encodeURIComponent(`Olá! Gostaria de mais informações sobre a viagem: ${this.viagens.titulo || 'Mergulho'}`);
-      return `https://wa.me/${telefone}?text=${mensagem}`;
+    imagemUrl() {
+      // Lógica segura para pegar a imagem do array 'volume'
+      if (this.viagem.volume && Array.isArray(this.viagem.volume) && this.viagem.volume.length > 0) {
+        return this.viagem.volume[0].url;
+      }
+      return 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80'; // Fallback
+    },
+    dataFormatada() {
+      if (!this.viagem.inicioViagem) return '';
+      // Formata: "DEZ 2023" ou "12/10/2023"
+      const data = new Date(this.viagem.inicioViagem);
+      return data.toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' }).toUpperCase();
     }
   }
 };
 </script>
 
 <style scoped>
-/* Transições */
-.transition-swing {
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+.viagem-card {
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  cursor: pointer;
 }
-
-.on-hover {
-  transform: translateY(-5px);
-  border-color: #D32F2F !important;
-}
-
-/* Imagem e Efeitos */
 .image-wrapper {
-  overflow: hidden;
   position: relative;
-  height: 100%;
+  overflow: hidden;
 }
-
-.card-img {
+.zoom-effect {
   transition: transform 0.6s ease;
 }
-
 .zoomed {
-  transform: scale(1.08);
+  transform: scale(1.1);
 }
-
-/* Badge flutuante na imagem */
-.destination-badge {
+.gradient-overlay {
   position: absolute;
-  top: 20px;
-  left: 20px;
-  background: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(5px);
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: linear-gradient(to bottom, transparent 50%, rgba(30,30,30, 0.9) 100%);
+}
+.date-badge {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
   padding: 6px 12px;
-  border-radius: 20px;
+  border-radius: 8px;
   color: white;
-  font-weight: bold;
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  font-size: 0.85rem;
   border: 1px solid rgba(255,255,255,0.1);
-  z-index: 2;
 }
-
-/* Gradiente para mobile */
-.image-gradient {
-  position: absolute;
-  bottom: 0; left: 0; width: 100%; height: 60%;
-  background: linear-gradient(to top, #1E1E1E, transparent);
-}
-
-/* Texto limitado */
 .line-clamp-2 {
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
-.line-clamp-4 {
+.line-clamp-3 {
   display: -webkit-box;
-  -webkit-line-clamp: 4;
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
-
-/* Botão Brilhante */
-.btn-glow {
-  transition: 0.3s;
+.border-top {
+  border-top: 1px solid rgba(255,255,255,0.05);
 }
-.btn-glow:hover {
-  box-shadow: 0 0 15px rgba(211, 47, 47, 0.5);
-  transform: translateY(-2px);
-}
-
-@media (max-width: 960px) {
-  .image-wrapper {
-    height: 250px; /* Altura fixa no mobile */
-  }
+.hover-underline:hover {
+  text-decoration: underline;
+  background: transparent !important;
 }
 </style>

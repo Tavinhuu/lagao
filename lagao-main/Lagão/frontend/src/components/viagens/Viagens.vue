@@ -1,144 +1,87 @@
 <template>
-  <div class="viagens-page">
-    <v-container class="py-10 py-md-16">
-      
-      <div class="text-center mb-12">
-        <h2 class="text-overline red--text font-weight-bold mb-2 tracking-widest">
-          EXPLORE O MUNDO
+  <div class="viagens-wrapper">
+    <v-container class="py-16">
+      <div class="text-center mb-16">
+        <h2 class="text-overline red--text font-weight-bold tracking-widest mb-2">
+          NOSSO PORTFÓLIO
         </h2>
-        <h1 class="text-h4 text-md-h2 font-weight-black white--text text-uppercase">
-          Próximas Expedições
+        <h1 class="text-h4 text-md-h2 white--text font-weight-black text-uppercase">
+          Destinos Explorados
         </h1>
         <div class="mx-auto mt-4 gradient-line"></div>
+        <p class="grey--text text--lighten-1 mt-6 mx-auto" style="max-width: 700px; font-size: 1.1rem;">
+          Confira as expedições incríveis que já realizamos. Cada viagem é uma história única de superação, beleza e amizade.
+        </p>
       </div>
 
-      <div v-if="loading" class="text-center py-16">
+      <div v-if="loading" class="text-center py-10">
         <v-progress-circular indeterminate color="#D32F2F" size="60"></v-progress-circular>
-        <p class="grey--text mt-4">Carregando destinos...</p>
       </div>
 
-      <div v-else>
-        <v-row justify="center" v-if="viagens.length > 0">
-          <v-col 
-            v-for="viagem in viagensPaginadas" 
-            :key="viagem.id" 
-            cols="12" 
-            md="10" 
-            lg="9" 
-            class="mb-6"
-          >
-            <CardViagens :viagens="viagem"></CardViagens>
-          </v-col>
-        </v-row>
-
-        <div v-else class="text-center py-16 border-dashed rounded-xl mx-auto" style="max-width: 600px;">
-          <v-icon size="64" color="grey darken-3" class="mb-4">mdi-map-search-outline</v-icon>
-          <h3 class="text-h5 white--text font-weight-bold mb-2">Nenhuma viagem encontrada</h3>
-          <p class="grey--text">Estamos planejando novas aventuras. Fique ligado!</p>
-        </div>
-
-        <div class="text-center mt-10" v-if="viagens.length > viagensPorPagina">
-          <v-pagination
-            v-model="paginaAtual"
-            :length="totalPaginas"
-            color="#D32F2F"
-            circle
-            dark
-            class="custom-pagination"
-            @input="scrollTop"
-          ></v-pagination>
-        </div>
+      <div v-else-if="viagens.length === 0" class="text-center py-10">
+        <v-icon size="60" color="grey darken-3">mdi-image-filter-hdr</v-icon>
+        <p class="grey--text mt-4">Nenhuma viagem registrada ainda.</p>
       </div>
+
+      <v-row v-else>
+        <v-col 
+          v-for="viagem in viagens" 
+          :key="viagem.id"
+          cols="12" sm="6" md="4"
+        >
+          <CardViagens :viagem="viagem" />
+        </v-col>
+      </v-row>
 
     </v-container>
   </div>
 </template>
 
 <script>
+import ViagensService from '@/services/viagens.service';
 import CardViagens from './CardViagens.vue';
-import viagensService from '@/services/viagens.service';
 
 export default {
-  name: "NossasViagens",
+  name: "ListaViagens",
   components: {
     CardViagens
   },
   data() {
     return {
-      loading: true,
       viagens: [],
-      paginaAtual: 1,
-      viagensPorPagina: 4 // Aumentei um pouco para aproveitar telas grandes
+      loading: true
     };
   },
-  computed: {
-    totalPaginas() {
-      return Math.ceil(this.viagens.length / this.viagensPorPagina);
-    },
-    viagensPaginadas() {
-      const inicio = (this.paginaAtual - 1) * this.viagensPorPagina;
-      const fim = inicio + this.viagensPorPagina;
-      return this.viagens.slice(inicio, fim);
+  async mounted() {
+    this.loading = true;
+    try {
+      const response = await ViagensService.getAll();
+      this.viagens = response.data;
+      
+      // Ordenar por data (mais recente primeiro) se o backend não ordenar
+      this.viagens.sort((a, b) => new Date(b.inicioViagem) - new Date(a.inicioViagem));
+      
+    } catch (error) {
+      console.error("Erro ao buscar viagens:", error);
+    } finally {
+      this.loading = false;
     }
-  },
-  methods: {
-    async pegarViagens() {
-      try {
-        this.loading = true;
-        this.viagens = await viagensService.getViagens();
-      } catch (error) {
-        console.error("Erro ao buscar viagens:", error);
-      } finally {
-        this.loading = false;
-      }
-    },
-    // Rola para o topo suavemente ao mudar de página
-    scrollTop() {
-      this.$vuetify.goTo(0);
-    }
-  },
-  mounted() {
-    this.pegarViagens();
   }
-}
+};
 </script>
 
 <style scoped>
-.viagens-page {
+.viagens-wrapper {
   background-color: #121212;
   min-height: 100vh;
-  font-family: 'Roboto', sans-serif;
 }
-
 .tracking-widest {
   letter-spacing: 3px !important;
 }
-
 .gradient-line {
-  width: 80px;
+  width: 60px;
   height: 4px;
   background: linear-gradient(90deg, #D32F2F 0%, #ff7961 100%);
   border-radius: 4px;
-}
-
-.border-dashed {
-  border: 2px dashed rgba(255, 255, 255, 0.1);
-}
-
-/* Customização da Paginação Dark */
-::v-deep .v-pagination__item {
-  background-color: #1E1E1E !important;
-  border: 1px solid rgba(255,255,255,0.1);
-  color: white !important;
-}
-
-::v-deep .v-pagination__item--active {
-  background-color: #D32F2F !important;
-  border-color: #D32F2F;
-  box-shadow: 0 0 10px rgba(211, 47, 47, 0.5);
-}
-
-::v-deep .v-pagination__navigation {
-  background-color: #1E1E1E !important;
 }
 </style>
