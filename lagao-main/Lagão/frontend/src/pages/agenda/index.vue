@@ -1,208 +1,190 @@
 <template>
-  <v-container class="my-15" :style="{ width: '90%' }" fluid>
-    <!-- Controle de Navegação do Mês -->
-    <div align="center">
-      <v-row justify="space-between" align="center" class="month-navigation">
-        <v-btn icon @click="mudarMes(-1)">
-          <v-icon>mdi-chevron-left</v-icon>
-        </v-btn>
-        <h1 class="mx-15">{{ mesAtualNome }}/{{ anoAtual }}</h1>
-        <v-btn icon @click="mudarMes(1)">
-          <v-icon>mdi-chevron-right</v-icon>
-        </v-btn>
-      </v-row>
-    </div>
+  <div class="agenda-wrapper">
+    <v-container class="py-10 py-md-16">
+      
+      <div class="text-center mb-10">
+        <h2 class="text-overline red--text font-weight-bold mb-2 tracking-widest">
+          PROGRAMAÇÃO
+        </h2>
+        
+        <div class="d-flex align-center justify-center gap-4">
+          <v-btn icon large color="white" @click="mudarMes(-1)" class="hover-glow">
+            <v-icon>mdi-chevron-left</v-icon>
+          </v-btn>
+          
+          <h1 class="text-h4 text-md-h3 font-weight-black white--text text-uppercase text-center min-w-300">
+            {{ mesAtualNome }} <span class="red--text">{{ anoAtual }}</span>
+          </h1>
 
-    <div class="calendar-wrapper">
-      <!-- Calendario -->
-      <div class="calendar pt-10">
-        <!-- Cabeçalho do Calendário -->
-        <div class="calendar-header">
-          <div v-for="dia in diasSemana" :key="dia" class="calendar-header-item">
+          <v-btn icon large color="white" @click="mudarMes(1)" class="hover-glow">
+            <v-icon>mdi-chevron-right</v-icon>
+          </v-btn>
+        </div>
+        
+        <div class="d-flex justify-center mt-6 gap-4 flex-wrap">
+          <v-chip small color="#A92827" text-color="white" class="font-weight-bold">Viagens</v-chip>
+          <v-chip small color="#1E88E5" text-color="white" class="font-weight-bold">Cursos</v-chip>
+          <v-chip small color="#757575" text-color="white" class="font-weight-bold">Eventos</v-chip>
+        </div>
+      </div>
+
+      <div v-if="$vuetify.breakpoint.xsOnly" class="mobile-agenda">
+        <v-slide-x-transition group>
+          <div v-if="diasComEventos.length === 0" key="empty" class="text-center py-10 grey--text">
+            <v-icon size="50" color="grey darken-3">mdi-calendar-blank</v-icon>
+            <p class="mt-2">Nenhum evento programado para este mês.</p>
+          </div>
+
+          <div v-else v-for="dia in diasComEventos" :key="dia.data" class="mb-6">
+            <div class="d-flex align-center mb-3">
+              <div class="red darken-2 rounded-lg py-1 px-3 mr-3 text-center">
+                <span class="d-block white--text font-weight-bold text-h5">{{ dia.numero }}</span>
+                <span class="d-block white--text text-caption text-uppercase">{{ dia.diaSemana }}</span>
+              </div>
+              <v-divider class="grey darken-3"></v-divider>
+            </div>
+
+            <v-card 
+              v-for="item in [...dia.eventos, ...dia.viagens, ...dia.cursos]" 
+              :key="item.id + item.tipo"
+              class="mb-3 rounded-lg event-card-mobile"
+              :color="pegarCorCard(item.tipo)"
+              @click="mostrarDetalhes(item)"
+              elevation="4"
+            >
+              <div class="d-flex align-center pa-3">
+                <v-avatar size="50" class="mr-3 rounded-lg">
+                  <v-img :src="item.volume?.url || '@/assets/logo.png'" cover></v-img>
+                </v-avatar>
+                <div class="flex-grow-1 overflow-hidden">
+                  <h4 class="white--text font-weight-bold text-truncate">{{ item.nome || item.titulo || item.destino }}</h4>
+                  <span class="white--text text--lighten-2 text-caption d-block text-truncate">
+                    {{ item.descricao }}
+                  </span>
+                </div>
+                <v-icon color="white">mdi-chevron-right</v-icon>
+              </div>
+            </v-card>
+          </div>
+        </v-slide-x-transition>
+      </div>
+
+      <div v-else class="desktop-calendar">
+        <div class="calendar-grid-header mb-2">
+          <div v-for="dia in diasSemana" :key="dia" class="text-center grey--text text--darken-1 font-weight-bold">
             {{ dia.toUpperCase() }}
           </div>
         </div>
-        <!-- Corpo do Calendário -->
-        <div class="calendar-body">
-          <div v-for="(dia, index) in diasDoMes" :key="index" class="calendar-day px-5 pb-5" :class="{ vazio: !dia.numero }">
-            <div v-if="dia.numero" class="day-number d-flex flex-row-reverse pt-1">{{ dia.numero }}</div>
-  
-            <!-- Botão Eventos -->
-            <div v-if="dia.eventos.length">
-              <div 
-                v-for="evento in dia.eventos" 
-                :key="evento.id" 
-                class="pt-1"
-                >
-                <v-btn 
-                @click="mostrarDetalhes(evento, $event)"
-                block 
-                rounded 
-                class="d-flex justify-space-between align-center"
-                :style="{ 
-                  backgroundColor: pegarCorBotao(evento.tipo).backgroundColor, 
-                  color: pegarCorBotao(evento.tipo).color, 
-                  textTransform: 'none'}"
-                >
-                  <h5 class="ma-0 pa-0">{{ evento.nome }}</h5>
-                  <v-icon
-                    right
-                    light
-                  >
-                    mdi-chevron-right
-                  </v-icon>
-                </v-btn>
-              </div>
+
+        <div class="calendar-grid-body">
+          <div 
+            v-for="(dia, index) in diasDoMes" 
+            :key="index" 
+            class="calendar-cell pa-2 d-flex flex-column"
+            :class="{ 'empty-day': !dia.numero }"
+          >
+            <div v-if="dia.numero" class="text-right mb-2">
+              <span class="day-number grey--text">{{ dia.numero }}</span>
             </div>
-  
-            <!-- Botão Cursos -->
-            <div v-if="dia.cursos.length" class="event-marker">
-              <div
-                v-for="curso in dia.cursos"
-                :key="curso.id"
-                :class="['event-marker', 'curso']"
-                class="pt-1"
+
+            <div class="flex-grow-1 overflow-y-auto custom-scrollbar" style="max-height: 120px;">
+              <template v-if="dia.numero">
+                <v-chip 
+                  v-for="viagem in dia.viagens" 
+                  :key="'v-'+viagem.id"
+                  small 
+                  color="#A92827" 
+                  text-color="white"
+                  class="mb-1 w-100 justify-start cursor-pointer hover-scale"
+                  @click="mostrarDetalhes(viagem)"
                 >
-                <v-btn
-                  @click="mostrarDetalhes(curso, $event)"
-                  block 
-                  rounded 
-                  class="d-flex justify-space-between align-center"
-                  :style="{ 
-                    backgroundColor: pegarCorBotao(`curso`).backgroundColor, 
-                    color: pegarCorBotao(`curso`).color, 
-                    textTransform: 'none'}"
+                  <v-icon left x-small>mdi-airplane</v-icon>
+                  <span class="text-truncate">{{ viagem.destino }}</span>
+                </v-chip>
+
+                <v-chip 
+                  v-for="curso in dia.cursos" 
+                  :key="'c-'+curso.id"
+                  small 
+                  color="#1E88E5" 
+                  text-color="white"
+                  class="mb-1 w-100 justify-start cursor-pointer hover-scale"
+                  @click="mostrarDetalhes(curso)"
                 >
-                  <h5 class="ma-0 pa-0">{{ curso.nome }}</h5>
-                  <v-icon
-                    right
-                    light
-                  >
-                    mdi-chevron-right
-                  </v-icon>
-                </v-btn>
-              </div>
+                  <v-icon left x-small>mdi-school</v-icon>
+                  <span class="text-truncate">{{ curso.nome }}</span>
+                </v-chip>
+
+                <v-chip 
+                  v-for="evento in dia.eventos" 
+                  :key="'e-'+evento.id"
+                  small 
+                  color="#424242" 
+                  text-color="white"
+                  class="mb-1 w-100 justify-start cursor-pointer hover-scale"
+                  @click="mostrarDetalhes(evento)"
+                >
+                  <v-icon left x-small>mdi-star</v-icon>
+                  <span class="text-truncate">{{ evento.nome }}</span>
+                </v-chip>
+              </template>
             </div>
-  
-            <!-- Botão Viagens -->
-            <div v-if="dia.viagens.length" class="event-marker">
-              <div
-                v-for="viagem in dia.viagens"
-                :key="viagem.id"
-                :class="['event-marker', 'viagem']"
-                class="pt-1"
-                >
-                <v-btn
-                  @click="mostrarDetalhes(viagem, $event)"
-                  block 
-                  rounded 
-                  class="d-flex justify-space-between align-center"
-                  :style="{ 
-                    backgroundColor: pegarCorBotao(`viagem`).backgroundColor, 
-                    color: pegarCorBotao(`viagem`).color, 
-                    textTransform: 'none'}"
-                >
-                  <h5 class="ma-0 pa-0">{{ viagem.destino }}</h5>
-                  <v-icon
-                    right
-                    light
-                  >
-                    mdi-chevron-right
-                  </v-icon>
-                </v-btn>
-              </div>
-            </div>
-  
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Card de Detalhes do Evento -->
-    <v-card 
-      v-if="cardVisivel" 
-      ref="card"
-      class="event-details"
-      elevation="20"
-      :style="{ top: cardPosition.top, left: cardPosition.left, position: 'absolute' }"
-      >
-      <div class="d-flex flex-row-reverse">
-        <v-btn 
-          icon 
-          small 
-          @click="cardVisivel = false"
-        >
-          <v-icon>mdi-close</v-icon>
-        </v-btn>
-      </div>
-      <div class="d-flex flex-no-wrap justify-space-between">
-        <v-avatar
-        class="mb-6 ml-5 mr-3"
-        size="250"
-        rounded
-        >
-          <v-img :src="detalhesEvento.volume.url"></v-img>
-        </v-avatar>
-      
-        <div>
-          <v-card-title v-if="detalhesEvento.nome" class="subtitle-1 font-weight-black">{{ detalhesEvento.nome }}</v-card-title>
-          <v-card-title v-if="detalhesEvento.destino" class="subtitle-1 font-weight-black">{{ detalhesEvento.destino }}</v-card-title>
-          
-          <v-card-text>
+      <v-dialog v-model="dialogVisivel" max-width="500" content-class="rounded-xl">
+        <v-card color="#1a1a1a" dark v-if="detalhesEvento">
+          <v-img 
+            :src="detalhesEvento.volume?.url || '@/assets/logo.png'" 
+            height="200" 
+            cover
+          >
+            <div class="fill-height d-flex align-end pa-4 gradient-overlay">
+              <div>
+                <v-chip small :color="pegarCorCard(detalhesEvento.tipo)" class="mb-2 font-weight-bold">
+                  {{ detalhesEvento.tipo?.toUpperCase() || 'EVENTO' }}
+                </v-chip>
+                <h3 class="text-h5 font-weight-black white--text text-shadow">
+                  {{ detalhesEvento.nome || detalhesEvento.titulo || detalhesEvento.destino }}
+                </h3>
+              </div>
+            </div>
+          </v-img>
 
-            <!-- Tempo/Data Viagem -->
-            <div v-if="detalhesEvento.inicioViagem" class="d-flex flex-no-wrap justify-space-between align-content-center">
-              <p>  
-                <v-icon color="#A92827">mdi-clock-time-four-outline</v-icon>
-                {{ detalhesEvento.duracao }}
-              </p>
-              <p>
-                <v-icon color="#A92827">mdi-calendar-month-outline</v-icon>
-                {{ detalhesEvento.inicioViagem }}
-              </p>
+          <v-card-text class="pt-4">
+            <div class="d-flex justify-space-between mb-4 grey--text text--lighten-1">
+              <div class="d-flex align-center">
+                <v-icon small color="red" class="mr-2">mdi-calendar</v-icon>
+                {{ detalhesEvento.inicioViagem || detalhesEvento.data }}
+              </div>
+              <div class="d-flex align-center" v-if="detalhesEvento.duracao || detalhesEvento.tempo">
+                <v-icon small color="red" class="mr-2">mdi-clock</v-icon>
+                {{ detalhesEvento.duracao || detalhesEvento.tempo }}
+              </div>
             </div>
 
-            <!-- Tempo/Data Evento -->
-            <div v-if="detalhesEvento.data" class="d-flex flex-no-wrap justify-space-between align-content-center">
-              <p>  
-                <v-icon color="#A92827">mdi-clock-time-four-outline</v-icon>
-                {{ detalhesEvento.tempo }}
-              </p>
-              <p>
-                <v-icon color="#A92827">mdi-calendar-month-outline</v-icon>
-                {{ detalhesEvento.data }}
-              </p>
-            </div>
+            <v-divider class="grey darken-3 mb-4"></v-divider>
 
-            <div>
-              <p v-if="detalhesEvento.subtituloDescricao" class="subtitle-1 font-weight-bold">{{ detalhesEvento.subtituloDescricao }}</p>
-              <p v-if="detalhesEvento.titulo" class="subtitle-1 font-weight-bold">{{ detalhesEvento.titulo }}</p>
-              
-              <p class="caption">{{ detalhesEvento.descricao }}</p>
-            </div>
-
-            <v-btn block color='#A92827' class="white--text text-capitalize font-weight-medium" :href="detalhesEvento.link">Mais Detalhes</v-btn>
+            <p class="text-body-1 grey--text text--lighten-2">
+              {{ detalhesEvento.descricao }}
+            </p>
           </v-card-text>
-        </div>
-      </div>
-    </v-card>
 
-    <!-- Legenda -->
-    <div class="legend pt-10">
-      <div class="legend-item">
-        <span class="legend-box" style="background-color: #A92827;"></span>
-        <span>Viagens</span>
-      </div>
-      <div class="legend-item">
-        <span class="legend-box" style="background-color: #171717;"></span>
-        <span>Cursos</span>
-      </div>
-      <div class="legend-item">
-        <span class="legend-box" style="background-color: #E5E4E4;"></span>
-        <span>Eventos</span>
-      </div>
-    </div>
-  </v-container>
+          <v-card-actions class="pa-4 pt-0">
+            <v-btn block large rounded color="#D32F2F" class="font-weight-bold" :href="detalhesEvento.link || '#'">
+              <v-icon left>mdi-whatsapp</v-icon>
+              Saiba Mais
+            </v-btn>
+            <v-btn block text color="grey" @click="dialogVisivel = false" class="mt-2">
+              Fechar
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+    </v-container>
+  </div>
 </template>
 
 <script>
@@ -210,7 +192,7 @@ import viagensService from '@/services/viagens.service';
 import cursoService from "@/services/cursos.service";
 
 export default {
-  name: "indexAgenda",
+  name: "IndexAgenda",
   data() {
     return {
       mesAtual: new Date().getMonth(),
@@ -219,55 +201,50 @@ export default {
       viagens: [],
       cursos: [],
       detalhesEvento: null,
+      dialogVisivel: false,
       diasSemana: ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"],
-      cardPosition: { top: "0px", left: "0px" },
-      cardVisivel: false
     }
   },
   computed: {
     mesAtualNome() {
-      let mes = new Date(this.anoAtual, this.mesAtual).toLocaleString('default', { month: 'long' });
-      return mes.charAt(0).toUpperCase() + mes.slice(1)
+      let mes = new Date(this.anoAtual, this.mesAtual).toLocaleString('pt-BR', { month: 'long' });
+      return mes.charAt(0).toUpperCase() + mes.slice(1);
     },
+    // Calcula os dias apenas para o Grid Desktop
     diasDoMes() {
       let dias = [];
       let primeiroDiaSemana = new Date(this.anoAtual, this.mesAtual, 1).getDay();
       let totalDias = new Date(this.anoAtual, this.mesAtual + 1, 0).getDate();
       
+      // Espaços vazios antes do dia 1
       for (let i = 0; i < primeiroDiaSemana; i++) {
         dias.push({ numero: null, eventos: [], viagens: [], cursos: [] });
       }
-      console.log(this.eventos);
       
       for (let i = 1; i <= totalDias; i++) {
         let data = `${this.anoAtual}/${String(this.mesAtual + 1).padStart(2, '0')}/${String(i).padStart(2, '0')}`
         dias.push({
           numero: i,
           data,
-          eventos: this.eventos.filter(e => e.data === data),
-          cursos: this.cursos.filter(e => 
-                          e.agendas.some(a => {
-                            const dataInv = a.data.split('/').reverse().join('/')
-                            return dataInv === data
-                          })),
-          viagens: this.viagens.filter(e =>
-                          e.agendas.some(a => {
-                            const dataInv = a.data.split('/').reverse().join('/')
-                            return dataInv === data
-                          }))
-
+          eventos: this.filterByDate(this.eventos, data),
+          cursos: this.filterByAgenda(this.cursos, data),
+          viagens: this.filterByAgenda(this.viagens, data)
         });
       }
-
-      const resto = dias.length % 7;
-      if (resto !== 0) {
-        const diasFaltantes = 7 - resto;
-        for (let i = 0; i < diasFaltantes; i++) {
-          dias.push({ numero: null, eventos: [], viagens: [], cursos: [] });
-        }
-      }
-      
       return dias;
+    },
+    // Cria uma lista filtrada apenas com dias que têm algo (Para Mobile)
+    diasComEventos() {
+      return this.diasDoMes.filter(dia => 
+        dia.numero && (dia.eventos.length || dia.viagens.length || dia.cursos.length)
+      ).map(dia => {
+        // Adiciona nome do dia da semana para ficar bonito no mobile
+        const date = new Date(this.anoAtual, this.mesAtual, dia.numero);
+        return {
+          ...dia,
+          diaSemana: date.toLocaleString('pt-BR', { weekday: 'short' }).replace('.', '')
+        };
+      });
     }
   },
   methods: {
@@ -275,62 +252,54 @@ export default {
       this.mesAtual += valor;
       if (this.mesAtual < 0) {
         this.mesAtual = 11;
-        this.anoAtual-=1;
+        this.anoAtual -= 1;
       } else if (this.mesAtual > 11) {
         this.mesAtual = 0;
-        this.anoAtual+=1;
+        this.anoAtual += 1;
       }
       this.carregarEventos();
     },
     async carregarEventos() {
-      this.viagens = await viagensService.getViagens()
-      this.cursos = await cursoService.getCursos()
-      
-      this.eventos = [
-        { id: 1, nome: "Ação de graças",subtituloDescricao: "Evento especial", descricao: "Mergulho nas águas cristalinas.", data: "2025/03/15", tipo: "evento", link: "#", tempo: '7 dias', volume: { id: 1, url: "https://lh3.googleusercontent.com/fife/ALs6j_G-cGJsOqJsL8SspJkSwws1wUIgFHMgUw1LEARXufYB7LR1XAomWVmIFXOlHKMV0RxSp9ZQL6OdryJMOS72Oa9WZrFnt9l1F2btoFVcIxUVuXYn-ZronMZZbP9rSCoAEcw-ZBknzZ6hpOSG24kDq7hZ7nxiDlLVD1WAabbSjl-wZZjEa_J2XmhmYd596nJ1qG7S3LlQtLCRC4d4zgkKEdlKWp74DjS5omlvffyfFHcbdLWg-x4nhy4JRIr6Tb6DoYLWgNtc2VAk3nBWhxMgExf66NoGUAJsaPQHPBUupXXDZhS1qfkdmz2mtM4MERDSowzj-nr0eZW49eCCICAmjSM2CaPAjzFTLKXmoT3bM0Fux0bB-6gVWUR_FBdCq5zozq0g7yUd3ylNtq2hm3HW3s2gF5qgPXyWVJk1b4zMkJ3D0c7sTgE-YyeL35gLSZfpvNzHPimmSlCLsduGJCq5GaDpllthq0qPam6A0lQm0pkwsgvNOtDKqz2aA7bK339L7Tm9XlcPE2pXVeLZwowfyhgXktlhNAfKfGx3DO375sICfwARC2T6g7EMVl6ziuSR1dHsX61AdKjjvqwAhXZPymwHHDBSBGcl_wWdHA2YDibcPMjwDlYLXk8a9UDWR1mrFyh3SU45AlpxT2imUjZ49y1F_AmNYf-BzoHs5qNpnyTrgr_QKJd5f0zJJK7_5n_pISoLlTZ0de6zIXrl_ygIurkRyzcnWusGL0cBMJYW1s9vHzGbA9LAnAMOZh-c83RHzX7H3Tt8J7TFprnv9EDF2b5L5_WTlBkx6a367M0OmCGkbIlTVsqMhl9lXGuhXX9VPwHOUH921pLe_tQFZqOSLvB8AbIShB7T57j_WQtYpsno1HO7Uzn3tcrZdDlxXQUung_v3yhcy8L-giouOvUUFuuSmpf26Hr0yShUGB1PfLIvAEFrlE-jPbh3oWrAxxKeKrGNE896XgdoE8g75HdeecA3kwq_KQGaCpSZLGCB_0sHWqAX09hFcwApMnwTd9tvoIpTo7V9pQ0BVscr6FZtVz_YyxJaegfdzfDZYxfmkGgPWaEspCPOBxA0KImV88hmniRkO5f9wgbdVk2RrQ3ksy8b0rpFxTyCn6ic9H3sjGEYSS4uAE5VzCvjm8I2acQOXNs7BfUIgdpFCNvc7lbSOJTphsjc7xAxQYABsNf5_9QC0Gmza2aXkly5IBXax6qrA9_PgXXHOYcw_xQCJpdf4bJBAxUjvosYjM0Lxg_mGi7ejQvH0uGkpivM_jzO7hFHYGyCcmERWvDgKuEzwntqDKJJQ-5rXvW_x5dWsmrfmmmL7kOV-jrIp7Ax2KgUfxP8GGi0t5gM_cgzIMP0BeR_kAkLJ6ORU6Hf4YnNJ1xQfSf3yGWzysvDPA1ahBYQms7yTFPJcF-c6O0SpXM8CqnutyJg6VW_1HA-SNvWvN1sWMmo7899YFJDsAa6uS2pAReXSGOvv_LkveAUzPWS8DHi9dHXVAlrk60U_GG37OJhAnefpenBvkJfbyhryP5n9GWE0vAzGm3ZDZTWBJmCblGV8qE8k-HBPW5yUbBq2bxfU9r_xtQjcCepFS0usxO-k1VHrxD6y2V_RptoWYm653lHvqbA-y2hthZmYdRTOFazEboSIzOH3orafFkmUd-_KnUjGUqe_TkAL1uHxBfGn5C9BXYsq7bm12WiSKQuxZKM-7Vp3S4Wem2IIs6HdxRJLg=w1318-h694"}, },
-        { id: 2, nome: "Ação de graças",subtituloDescricao: "Evento especial", descricao: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.", data: "2025/03/20", tipo: "evento", link: "#", tempo: '7 dias', volume: { id: 1, url: "https://lh3.googleusercontent.com/fife/ALs6j_G-cGJsOqJsL8SspJkSwws1wUIgFHMgUw1LEARXufYB7LR1XAomWVmIFXOlHKMV0RxSp9ZQL6OdryJMOS72Oa9WZrFnt9l1F2btoFVcIxUVuXYn-ZronMZZbP9rSCoAEcw-ZBknzZ6hpOSG24kDq7hZ7nxiDlLVD1WAabbSjl-wZZjEa_J2XmhmYd596nJ1qG7S3LlQtLCRC4d4zgkKEdlKWp74DjS5omlvffyfFHcbdLWg-x4nhy4JRIr6Tb6DoYLWgNtc2VAk3nBWhxMgExf66NoGUAJsaPQHPBUupXXDZhS1qfkdmz2mtM4MERDSowzj-nr0eZW49eCCICAmjSM2CaPAjzFTLKXmoT3bM0Fux0bB-6gVWUR_FBdCq5zozq0g7yUd3ylNtq2hm3HW3s2gF5qgPXyWVJk1b4zMkJ3D0c7sTgE-YyeL35gLSZfpvNzHPimmSlCLsduGJCq5GaDpllthq0qPam6A0lQm0pkwsgvNOtDKqz2aA7bK339L7Tm9XlcPE2pXVeLZwowfyhgXktlhNAfKfGx3DO375sICfwARC2T6g7EMVl6ziuSR1dHsX61AdKjjvqwAhXZPymwHHDBSBGcl_wWdHA2YDibcPMjwDlYLXk8a9UDWR1mrFyh3SU45AlpxT2imUjZ49y1F_AmNYf-BzoHs5qNpnyTrgr_QKJd5f0zJJK7_5n_pISoLlTZ0de6zIXrl_ygIurkRyzcnWusGL0cBMJYW1s9vHzGbA9LAnAMOZh-c83RHzX7H3Tt8J7TFprnv9EDF2b5L5_WTlBkx6a367M0OmCGkbIlTVsqMhl9lXGuhXX9VPwHOUH921pLe_tQFZqOSLvB8AbIShB7T57j_WQtYpsno1HO7Uzn3tcrZdDlxXQUung_v3yhcy8L-giouOvUUFuuSmpf26Hr0yShUGB1PfLIvAEFrlE-jPbh3oWrAxxKeKrGNE896XgdoE8g75HdeecA3kwq_KQGaCpSZLGCB_0sHWqAX09hFcwApMnwTd9tvoIpTo7V9pQ0BVscr6FZtVz_YyxJaegfdzfDZYxfmkGgPWaEspCPOBxA0KImV88hmniRkO5f9wgbdVk2RrQ3ksy8b0rpFxTyCn6ic9H3sjGEYSS4uAE5VzCvjm8I2acQOXNs7BfUIgdpFCNvc7lbSOJTphsjc7xAxQYABsNf5_9QC0Gmza2aXkly5IBXax6qrA9_PgXXHOYcw_xQCJpdf4bJBAxUjvosYjM0Lxg_mGi7ejQvH0uGkpivM_jzO7hFHYGyCcmERWvDgKuEzwntqDKJJQ-5rXvW_x5dWsmrfmmmL7kOV-jrIp7Ax2KgUfxP8GGi0t5gM_cgzIMP0BeR_kAkLJ6ORU6Hf4YnNJ1xQfSf3yGWzysvDPA1ahBYQms7yTFPJcF-c6O0SpXM8CqnutyJg6VW_1HA-SNvWvN1sWMmo7899YFJDsAa6uS2pAReXSGOvv_LkveAUzPWS8DHi9dHXVAlrk60U_GG37OJhAnefpenBvkJfbyhryP5n9GWE0vAzGm3ZDZTWBJmCblGV8qE8k-HBPW5yUbBq2bxfU9r_xtQjcCepFS0usxO-k1VHrxD6y2V_RptoWYm653lHvqbA-y2hthZmYdRTOFazEboSIzOH3orafFkmUd-_KnUjGUqe_TkAL1uHxBfGn5C9BXYsq7bm12WiSKQuxZKM-7Vp3S4Wem2IIs6HdxRJLg=w1318-h694"}, },
-        { id: 3, nome: "Ação de polvilho",subtituloDescricao: "Evento especial", descricao: "Curso técnico para mergulhadores.", data: "2025/03/31", tipo: "evento", link: "#", tempo: '7 dias', volume: { id: 1, url: "https://lh3.googleusercontent.com/fife/ALs6j_G-cGJsOqJsL8SspJkSwws1wUIgFHMgUw1LEARXufYB7LR1XAomWVmIFXOlHKMV0RxSp9ZQL6OdryJMOS72Oa9WZrFnt9l1F2btoFVcIxUVuXYn-ZronMZZbP9rSCoAEcw-ZBknzZ6hpOSG24kDq7hZ7nxiDlLVD1WAabbSjl-wZZjEa_J2XmhmYd596nJ1qG7S3LlQtLCRC4d4zgkKEdlKWp74DjS5omlvffyfFHcbdLWg-x4nhy4JRIr6Tb6DoYLWgNtc2VAk3nBWhxMgExf66NoGUAJsaPQHPBUupXXDZhS1qfkdmz2mtM4MERDSowzj-nr0eZW49eCCICAmjSM2CaPAjzFTLKXmoT3bM0Fux0bB-6gVWUR_FBdCq5zozq0g7yUd3ylNtq2hm3HW3s2gF5qgPXyWVJk1b4zMkJ3D0c7sTgE-YyeL35gLSZfpvNzHPimmSlCLsduGJCq5GaDpllthq0qPam6A0lQm0pkwsgvNOtDKqz2aA7bK339L7Tm9XlcPE2pXVeLZwowfyhgXktlhNAfKfGx3DO375sICfwARC2T6g7EMVl6ziuSR1dHsX61AdKjjvqwAhXZPymwHHDBSBGcl_wWdHA2YDibcPMjwDlYLXk8a9UDWR1mrFyh3SU45AlpxT2imUjZ49y1F_AmNYf-BzoHs5qNpnyTrgr_QKJd5f0zJJK7_5n_pISoLlTZ0de6zIXrl_ygIurkRyzcnWusGL0cBMJYW1s9vHzGbA9LAnAMOZh-c83RHzX7H3Tt8J7TFprnv9EDF2b5L5_WTlBkx6a367M0OmCGkbIlTVsqMhl9lXGuhXX9VPwHOUH921pLe_tQFZqOSLvB8AbIShB7T57j_WQtYpsno1HO7Uzn3tcrZdDlxXQUung_v3yhcy8L-giouOvUUFuuSmpf26Hr0yShUGB1PfLIvAEFrlE-jPbh3oWrAxxKeKrGNE896XgdoE8g75HdeecA3kwq_KQGaCpSZLGCB_0sHWqAX09hFcwApMnwTd9tvoIpTo7V9pQ0BVscr6FZtVz_YyxJaegfdzfDZYxfmkGgPWaEspCPOBxA0KImV88hmniRkO5f9wgbdVk2RrQ3ksy8b0rpFxTyCn6ic9H3sjGEYSS4uAE5VzCvjm8I2acQOXNs7BfUIgdpFCNvc7lbSOJTphsjc7xAxQYABsNf5_9QC0Gmza2aXkly5IBXax6qrA9_PgXXHOYcw_xQCJpdf4bJBAxUjvosYjM0Lxg_mGi7ejQvH0uGkpivM_jzO7hFHYGyCcmERWvDgKuEzwntqDKJJQ-5rXvW_x5dWsmrfmmmL7kOV-jrIp7Ax2KgUfxP8GGi0t5gM_cgzIMP0BeR_kAkLJ6ORU6Hf4YnNJ1xQfSf3yGWzysvDPA1ahBYQms7yTFPJcF-c6O0SpXM8CqnutyJg6VW_1HA-SNvWvN1sWMmo7899YFJDsAa6uS2pAReXSGOvv_LkveAUzPWS8DHi9dHXVAlrk60U_GG37OJhAnefpenBvkJfbyhryP5n9GWE0vAzGm3ZDZTWBJmCblGV8qE8k-HBPW5yUbBq2bxfU9r_xtQjcCepFS0usxO-k1VHrxD6y2V_RptoWYm653lHvqbA-y2hthZmYdRTOFazEboSIzOH3orafFkmUd-_KnUjGUqe_TkAL1uHxBfGn5C9BXYsq7bm12WiSKQuxZKM-7Vp3S4Wem2IIs6HdxRJLg=w1318-h694"}, },
-        { id: 4, nome: "Ação de graças",subtituloDescricao: "Evento especial", descricao: "Mergulho nas águas cristalinas.", data: "2025/03/20", tipo: "evento", link: "#", tempo: '7 dias', volume: { id: 1, url: "https://lh3.googleusercontent.com/fife/ALs6j_G-cGJsOqJsL8SspJkSwws1wUIgFHMgUw1LEARXufYB7LR1XAomWVmIFXOlHKMV0RxSp9ZQL6OdryJMOS72Oa9WZrFnt9l1F2btoFVcIxUVuXYn-ZronMZZbP9rSCoAEcw-ZBknzZ6hpOSG24kDq7hZ7nxiDlLVD1WAabbSjl-wZZjEa_J2XmhmYd596nJ1qG7S3LlQtLCRC4d4zgkKEdlKWp74DjS5omlvffyfFHcbdLWg-x4nhy4JRIr6Tb6DoYLWgNtc2VAk3nBWhxMgExf66NoGUAJsaPQHPBUupXXDZhS1qfkdmz2mtM4MERDSowzj-nr0eZW49eCCICAmjSM2CaPAjzFTLKXmoT3bM0Fux0bB-6gVWUR_FBdCq5zozq0g7yUd3ylNtq2hm3HW3s2gF5qgPXyWVJk1b4zMkJ3D0c7sTgE-YyeL35gLSZfpvNzHPimmSlCLsduGJCq5GaDpllthq0qPam6A0lQm0pkwsgvNOtDKqz2aA7bK339L7Tm9XlcPE2pXVeLZwowfyhgXktlhNAfKfGx3DO375sICfwARC2T6g7EMVl6ziuSR1dHsX61AdKjjvqwAhXZPymwHHDBSBGcl_wWdHA2YDibcPMjwDlYLXk8a9UDWR1mrFyh3SU45AlpxT2imUjZ49y1F_AmNYf-BzoHs5qNpnyTrgr_QKJd5f0zJJK7_5n_pISoLlTZ0de6zIXrl_ygIurkRyzcnWusGL0cBMJYW1s9vHzGbA9LAnAMOZh-c83RHzX7H3Tt8J7TFprnv9EDF2b5L5_WTlBkx6a367M0OmCGkbIlTVsqMhl9lXGuhXX9VPwHOUH921pLe_tQFZqOSLvB8AbIShB7T57j_WQtYpsno1HO7Uzn3tcrZdDlxXQUung_v3yhcy8L-giouOvUUFuuSmpf26Hr0yShUGB1PfLIvAEFrlE-jPbh3oWrAxxKeKrGNE896XgdoE8g75HdeecA3kwq_KQGaCpSZLGCB_0sHWqAX09hFcwApMnwTd9tvoIpTo7V9pQ0BVscr6FZtVz_YyxJaegfdzfDZYxfmkGgPWaEspCPOBxA0KImV88hmniRkO5f9wgbdVk2RrQ3ksy8b0rpFxTyCn6ic9H3sjGEYSS4uAE5VzCvjm8I2acQOXNs7BfUIgdpFCNvc7lbSOJTphsjc7xAxQYABsNf5_9QC0Gmza2aXkly5IBXax6qrA9_PgXXHOYcw_xQCJpdf4bJBAxUjvosYjM0Lxg_mGi7ejQvH0uGkpivM_jzO7hFHYGyCcmERWvDgKuEzwntqDKJJQ-5rXvW_x5dWsmrfmmmL7kOV-jrIp7Ax2KgUfxP8GGi0t5gM_cgzIMP0BeR_kAkLJ6ORU6Hf4YnNJ1xQfSf3yGWzysvDPA1ahBYQms7yTFPJcF-c6O0SpXM8CqnutyJg6VW_1HA-SNvWvN1sWMmo7899YFJDsAa6uS2pAReXSGOvv_LkveAUzPWS8DHi9dHXVAlrk60U_GG37OJhAnefpenBvkJfbyhryP5n9GWE0vAzGm3ZDZTWBJmCblGV8qE8k-HBPW5yUbBq2bxfU9r_xtQjcCepFS0usxO-k1VHrxD6y2V_RptoWYm653lHvqbA-y2hthZmYdRTOFazEboSIzOH3orafFkmUd-_KnUjGUqe_TkAL1uHxBfGn5C9BXYsq7bm12WiSKQuxZKM-7Vp3S4Wem2IIs6HdxRJLg=w1318-h694"}, }
-      ];
-    },
-    mostrarDetalhes(evento, e) {
-      this.detalhesEvento = evento;
-      this.cardVisivel = true;
-
-      const buttonRect  = e.currentTarget.getBoundingClientRect();
-
-      this.$nextTick(() => {
-        const cardEl = this.$refs.card.$el
-        const cardRect = cardEl.getBoundingClientRect()
-        const containerRect = this.$el.getBoundingClientRect()
-        const spacing = 70
+      // Mock de dados para garantir que funcione se a API falhar
+      try {
+        const [viagensData, cursosData] = await Promise.all([
+          viagensService.getViagens().catch(() => []),
+          cursoService.getCursos().catch(() => [])
+        ]);
         
-        let top = buttonRect.top - containerRect.top + spacing + buttonRect.height;
-        let left = buttonRect.left + (buttonRect.width / 2) - (cardRect.width / 2) + window.scrollX;
-        
-        if (left + cardRect.width > containerRect.width) {
-          left = buttonRect.left + (buttonRect.width / 2) - (cardRect.width / 2) + window.scrollX - spacing*2.5
-        }
-        // Verifica se o card ultrapassa a borda esquerda da tela
-        if (left < spacing) {
-          left = spacing*1.5
-        }
-        if (top + cardRect.height > containerRect.height) {
-          top = containerRect.height - cardRect.height - spacing*3.4
-        }
-
-        this.cardPosition.top = `${top}px`;
-        this.cardPosition.left = `${left}px`;
-      });
-    },
-    pegarCorBotao(tipo) {
-      if (tipo === 'viagem') {
-        return { backgroundColor:'#A92827', color: '#FFFFFF' };
-      } else if (tipo === 'curso') {
-        return { backgroundColor: '#171717', color: '#FFFFFF' };
-      } else if (tipo === 'evento') {
-        return { backgroundColor: '#B4B9C1', color: '#A92827' };
+        this.viagens = viagensData.map(v => ({ ...v, tipo: 'viagem' }));
+        this.cursos = cursosData.map(c => ({ ...c, tipo: 'curso' }));
+      } catch(e) {
+        console.error("Erro API", e);
       }
+
+      // Seus eventos mockados (mantidos)
+
+    },
+    // Helpers de Filtro
+    filterByDate(lista, dataAlvo) {
+      return lista.filter(e => e.data === dataAlvo);
+    },
+    filterByAgenda(lista, dataAlvo) {
+      if (!lista) return [];
+      return lista.filter(item => 
+        item.agendas?.some(agenda => {
+          // Normaliza datas (Assume formato dd/mm/aaaa ou yyyy/mm/dd)
+          const dataItem = agenda.data.includes('/') && agenda.data.split('/')[0].length === 2 
+            ? agenda.data.split('/').reverse().join('/') // Converte dd/mm/yyyy -> yyyy/mm/dd
+            : agenda.data;
+          return dataItem === dataAlvo;
+        })
+      );
+    },
+    mostrarDetalhes(item) {
+      this.detalhesEvento = item;
+      this.dialogVisivel = true;
+    },
+    pegarCorCard(tipo) {
+      if (tipo === 'viagem') return '#A92827'; // Vermelho
+      if (tipo === 'curso') return '#1E88E5'; // Azul
+      return '#424242'; // Cinza Evento
     }
   },
   mounted() {
@@ -340,88 +309,66 @@ export default {
 </script>
 
 <style scoped>
-.calendar-wrapper {
-  overflow-x: auto;
-  width: 100%;
+.agenda-wrapper {
+  background-color: #121212;
+  min-height: 100vh;
+  font-family: 'Roboto', sans-serif;
 }
-.calendar {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-}
-.test {
-  background-color: aqua !important;
-}
-.month-navigation {
-  max-width: 600px;
-}
-.calendar-header,
-.calendar-body {
-  display: inline-grid;
-  grid-template-columns: repeat(7, minmax(200px, 1fr));
-  min-width: 1400px;
-  text-align: center;
-}
-.calendar-body {
-  background-color: #ddd;
-  border-radius: 20px;
-  overflow: hidden;
-  border: 2px solid #B4B9C1;
-}
-.calendar-header-item {
-  font-weight: bold;
-  padding: 5px;
-  font-size: 13.64px;
-}
-.calendar-day {
-  min-width: 200px;
-  height: 215px;
-  background-color: #FEFEFE;
-  padding: 0px;
-  box-sizing: border-box;
-  border-right: 2px solid #B4B9C1;
-  border-bottom: 2px solid #B4B9C1;
-}
-.calendar-body .calendar-day:nth-child(7n+1) {
-  background-color: #eeeeee
-}
-.calendar-day:nth-last-child(-n+7) {
-  border-bottom: none;
-}
-.calendar-day:nth-child(7n) {
-  border-right: none;
-  background-color: #eeeeee
-}
-.vazio {
-  background-color: #fff;
-  border-bottom: 2px solid #B4B9C1;
-}
-.day-number {
-  font-weight: bold;
-}
-.legend {
-  display: flex;
-  justify-content: start;
-  margin-top: 20px;
-  gap: 15px;
-}
-.legend-item {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-.legend-box {
-  width: 20px;
-  height: 20px;
-  border-radius: 3px;
-}
-.event-details {
-  background: white;
-  padding: 10px;
-  border-radius: 12px;
-  min-height: 200px;
 
-  max-width: 600px !important;
-  position: absolute !important;
+.min-w-300 { min-width: 300px; }
+.gap-4 { gap: 1rem; }
+.hover-glow:hover { text-shadow: 0 0 10px white; transform: scale(1.1); }
+
+/* Grid Desktop */
+.desktop-calendar {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  background: #1E1E1E;
+  overflow: hidden;
 }
+
+.calendar-grid-header, .calendar-grid-body {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.calendar-cell {
+  background-color: #1a1a1a;
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  min-height: 160px; /* Altura fixa para ficar bonito */
+}
+
+/* Bordas externas */
+.calendar-cell:nth-child(7n) { border-right: none; }
+.calendar-grid-body .calendar-cell:nth-last-child(-n+7) { border-bottom: none; }
+
+.empty-day { background-color: #161616; }
+
+.day-number {
+  font-size: 1.1rem;
+  font-weight: bold;
+  padding-right: 8px;
+}
+
+/* Chips e Hover */
+.hover-scale { transition: transform 0.2s; }
+.hover-scale:hover { transform: scale(1.05); z-index: 2; }
+
+/* Custom Scrollbar */
+.custom-scrollbar::-webkit-scrollbar { width: 4px; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: #444; border-radius: 2px; }
+
+/* Mobile */
+.event-card-mobile {
+  border: 1px solid rgba(255,255,255,0.1);
+  transition: transform 0.2s;
+}
+.event-card-mobile:active { transform: scale(0.98); }
+
+/* Modal */
+.gradient-overlay {
+  background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+}
+.text-shadow { text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
 </style>

@@ -7,10 +7,14 @@ Vue.use(Vuetify);
 
 export default new Vuetify({
   theme: {
+    dark: true, // Isso é CRUCIAL para o fundo escuro funcionar
     themes: {
-      light: {
-        background: '#FFFFFF', 
-        primary: '#000000', 
+      dark: {
+        primary: '#D32F2F',    // Vermelho
+        secondary: '#FFFFFF',
+        accent: '#FF5252',
+        background: '#121212', // Preto Fundo
+        surface: '#1E1E1E',    // Cinza Card
       },
     },
   },

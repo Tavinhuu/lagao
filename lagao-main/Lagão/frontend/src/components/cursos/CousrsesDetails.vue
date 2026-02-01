@@ -1,114 +1,171 @@
 <template>
-  <v-container>
-    <v-row>
-      <v-btn icon @click="$emit('voltar')">
-        <v-icon>mdi-arrow-left</v-icon>
-        Voltar
-      </v-btn>
-    </v-row>
-
-    <v-row>
-      <v-col cols="12">
-        <h1 class="text-center font-weight-black pb-6">
-          {{ curso.nome }}
-        </h1>
-
-        <v-tabs v-model="tab" grow>
-          <v-tab
-            v-for="(categoria, index) in todasCategorias"
-            :key="index"
-            class="custom-tab"
-            :class="{ 'active-tab': tab === index }"
+  <div class="course-details-wrapper">
+    <v-container class="py-10">
+      
+      <v-row class="mb-6">
+        <v-col cols="12">
+          <v-btn 
+            text 
+            rounded
+            color="grey lighten-1"
+            class="hover-back px-0"
+            @click="$emit('voltar')"
           >
-            {{ categoria.nome }}
-          </v-tab>
-        </v-tabs>
-      </v-col>
-    </v-row>
+            <v-icon left>mdi-arrow-left</v-icon>
+            Voltar para Cursos
+          </v-btn>
+        </v-col>
+      </v-row>
 
-    <v-row>
-      <v-col cols="12">
-        <v-carousel
-          v-if="imagensCategoriaAtual.length"
-          class="mb-6"
-          height="400"
-          hide-delimiters
-          cycle
-          :show-arrows="false"
-        >
-          <v-carousel-item
-            v-for="(imagem, index) in imagensCategoriaAtual"
-            :key="index"
+      <v-row justify="center" class="mb-10">
+        <v-col cols="12" class="text-center">
+          <h1 class="text-h3 text-md-h2 font-weight-black white--text text-uppercase mb-2 text-glow">
+            {{ curso.nome }}
+          </h1>
+          <div class="mx-auto mt-4 gradient-line"></div>
+        </v-col>
+      </v-row>
+
+      <v-row justify="center" class="mb-10">
+        <v-col cols="12" md="10">
+          <v-tabs 
+            v-model="tab" 
+            background-color="transparent"
+            dark
+            centered
+            show-arrows
+            class="custom-tabs"
           >
-            <v-img :src="imagem" height="400px" cover></v-img>
-          </v-carousel-item>
-        </v-carousel>
+            <v-tab 
+              v-for="(categoria, index) in todasCategorias" 
+              :key="index"
+              class="rounded-pill mx-1 px-6 font-weight-bold letter-spacing-1 transition-swing"
+              active-class="active-tab-glow"
+            >
+              {{ categoria.nome }}
+            </v-tab>
+          </v-tabs>
+        </v-col>
+      </v-row>
 
-        <p v-else class="text-center font-italic mb-6">
-          Nenhuma imagem disponível para esta categoria.
-        </p>
-      </v-col>
-    </v-row>
-
-    <v-row>
-      <v-col cols="12">
-        <v-card class="pa-5">
-          <template v-if="categoriaCurso">
-            <v-img
-              :src="categoriaCurso.volume?.url"
-              height="250px"
-              class="mb-3"
-              v-if="categoriaCurso.volume?.url"
-            ></v-img>
-
-            <v-card-title class="text-h5 font-weight-bold">
-              {{ categoriaCurso.titulo }}
-            </v-card-title>
-
-            <v-card-subtitle class="text-h6">
-              {{ curso.descricaoTeorico || ' ' }}
-            </v-card-subtitle>
-
-            <v-card-text>
-              <p>{{ categoriaCurso.descricao }}</p>
-              <p>{{ categoriaCurso.volume?.descricao }}</p>
-            </v-card-text>
-
-            <v-row class="mt-6">
-              <v-col cols="12">
-                <a
-                  :href="whatsappLink"
-                  target="_blank"
-                  style="text-decoration: none"
+      <v-fade-transition mode="out-in">
+        
+        <div v-if="categoriaCurso" :key="tab" class="content-area">
+          <v-row>
+            <v-col cols="12" md="5" class="d-flex flex-column">
+              <v-card 
+                class="rounded-xl overflow-hidden elevation-10 flex-grow-1" 
+                color="#1E1E1E"
+                style="border: 1px solid rgba(255,255,255,0.05);"
+              >
+                <v-carousel
+                  v-if="imagensCategoriaAtual && imagensCategoriaAtual.length > 0"
+                  height="400"
+                  hide-delimiters
+                  cycle
+                  :show-arrows="false"
+                  class="fill-height"
                 >
-                  <v-btn
-                    color="#A92827"
-                    class="white--text rounded-xl"
-                    block
-                  >
-                    Saiba mais
-                  </v-btn>
-                </a>
-              </v-col>
-            </v-row>
-          </template>
+                  <v-carousel-item
+                    v-for="(imagem, i) in imagensCategoriaAtual"
+                    :key="i"
+                    :src="imagem"
+                    cover
+                  ></v-carousel-item>
+                </v-carousel>
 
-          <template v-else>
-            <v-card-title class="text-h5 font-weight-bold">
-              Categoria indisponível para este curso.
-            </v-card-title>
-            <v-card-text>
-              Este curso ainda não possui conteúdo para a categoria selecionada.
-            </v-card-text>
-          </template>
-        </v-card>
-      </v-col>
-    </v-row>
-  </v-container>
+                <v-img
+                  v-else
+                  :src="categoriaCurso.volume?.url || '@/assets/logo.png'" 
+                  height="100%"
+                  min-height="400px"
+                  cover
+                  class="main-image"
+                >
+                  <template v-slot:placeholder>
+                    <v-row class="fill-height ma-0" align="center" justify="center" style="background: #1E1E1E;">
+                      <v-progress-circular indeterminate color="#D32F2F"></v-progress-circular>
+                    </v-row>
+                  </template>
+                  <div class="image-overlay"></div>
+                </v-img>
+              </v-card>
+            </v-col>
+
+            <v-col cols="12" md="7">
+              <v-card 
+                class="rounded-xl pa-6 pa-md-8 fill-height d-flex flex-column" 
+                color="#1a1a1a" 
+                elevation="0"
+                style="border: 1px solid rgba(255,255,255,0.05);"
+              >
+                <div class="mb-6">
+                  <h2 class="text-h4 font-weight-bold white--text mb-2">
+                    {{ categoriaCurso.titulo || curso.nome }}
+                  </h2>
+                  <p class="red--text text--accent-2 text-subtitle-1 font-weight-medium">
+                    {{ curso.descricaoTeorico || 'Módulo Teórico & Prático' }}
+                  </p>
+                </div>
+
+                <div class="grey--text text--lighten-1 text-body-1 mb-8 scrollable-text flex-grow-1">
+                  <p>{{ categoriaCurso.descricao }}</p>
+                  <p v-if="categoriaCurso.volume?.descricao" class="mt-4">
+                    {{ categoriaCurso.volume.descricao }}
+                  </p>
+                </div>
+
+                <div class="mt-auto pt-4">
+                  <v-btn
+                    x-large
+                    block
+                    rounded
+                    color="#D32F2F"
+                    class="white--text font-weight-bold elevation-10 btn-glow"
+                    :href="whatsappLink"
+                    target="_blank"
+                  >
+                    <v-icon left>mdi-whatsapp</v-icon>
+                    Agendar Agora
+                  </v-btn>
+                </div>
+              </v-card>
+            </v-col>
+          </v-row>
+        </div>
+
+        <div v-else :key="'empty-'+tab" class="text-center py-16">
+          <v-card 
+            class="rounded-xl pa-10 mx-auto" 
+            max-width="600" 
+            color="#1a1a1a" 
+            elevation="0"
+            style="border: 1px dashed rgba(255,255,255,0.1);"
+          >
+            <v-icon size="60" color="grey darken-3" class="mb-4">mdi-flask-empty-outline</v-icon>
+            <h3 class="text-h5 white--text font-weight-bold mb-2">Conteúdo em Breve</h3>
+            <p class="grey--text">
+              Ainda não temos informações detalhadas para este curso na categoria selecionada.
+            </p>
+            <v-btn 
+              text 
+              color="#D32F2F" 
+              @click="tab = 0"
+            >
+              Voltar para o início
+            </v-btn>
+          </v-card>
+        </div>
+
+      </v-fade-transition>
+
+    </v-container>
+  </div>
 </template>
 
 <script>
 export default {
+  name: "CourseDetails",
   props: {
     curso: {
       type: Object,
@@ -128,20 +185,24 @@ export default {
     categoriaSelecionada() {
       return this.todasCategorias?.[this.tab] || {};
     },
+    // Encontra os dados específicos desta categoria DENTRO do objeto curso
     categoriaCurso() {
-      return this.curso.categorias?.find(
+      if (!this.curso.categorias) return null;
+      return this.curso.categorias.find(
         (cat) => cat.categoriaId === this.categoriaSelecionada.id
       );
     },
+    // Busca imagens extras se existirem
     imagensCategoriaAtual() {
-      const imagens = this.curso.imagens?.find(
+      if (!this.curso.imagens) return [];
+      const objImagens = this.curso.imagens.find(
         (item) => item.categoriaId === this.categoriaSelecionada.id
       );
-      return imagens ? imagens.imagens : [];
+      return objImagens ? objImagens.imagens : [];
     },
     whatsappLink() {
       const telefone = "5561998385830";
-      const mensagem = encodeURIComponent("Olá! Gostaria de mais informações.");
+      const mensagem = encodeURIComponent(`Olá! Gostaria de saber mais sobre o curso: ${this.curso.nome} (${this.categoriaSelecionada.nome})`);
       return `https://wa.me/${telefone}?text=${mensagem}`;
     }
   }
@@ -149,26 +210,87 @@ export default {
 </script>
 
 <style scoped>
-.custom-tab {
-  text-transform: capitalize;
-  font-weight: 600;
+.course-details-wrapper {
+  /* Fundo transparente pois o pai (index.vue) já tem fundo escuro. 
+     Se precisar forçar: background-color: #121212; */
+}
+
+/* Título com brilho */
+.text-glow {
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+}
+
+.gradient-line {
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(90deg, #D32F2F 0%, #ff7961 100%);
+  border-radius: 4px;
+}
+
+/* ==============================
+   ABAS (TABS) - MESMO ESTILO DO INDEX
+   ============================== */
+.v-tab {
+  text-transform: capitalize !important;
+  letter-spacing: 0.5px;
+  color: rgba(255, 255, 255, 0.6) !important;
+  border: 1px solid transparent;
+  margin-bottom: 8px;
+}
+
+.active-tab-glow {
+  background-color: #D32F2F !important;
   color: white !important;
-  background-color: #A92827;
-  border-radius: 20px;
-  padding: 10px 20px;
-  margin: 5px;
-  text-decoration: none !important;
-  display: inline-block;
+  border-color: #D32F2F !important;
+  box-shadow: 0 0 15px rgba(211, 47, 47, 0.4);
 }
-.active-tab {
-  background-color: #EAE7E7 !important;
-  color: #A92827 !important;
-  font-weight: bold;
+
+::v-deep .v-tabs-slider { display: none !important; }
+
+/* ==============================
+   IMAGEM E CARD
+   ============================== */
+.image-overlay {
+  position: absolute;
+  bottom: 0; left: 0; width: 100%; height: 50%;
+  background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+  pointer-events: none;
 }
-::v-deep(.v-tab::before) {
-  background-color: transparent !important;
+
+.scrollable-text {
+  line-height: 1.8;
+  /* Se o texto for gigante, habilita scroll suave */
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 10px;
 }
-::v-deep(.v-tabs-slider) {
-  display: none !important;
+
+/* Scrollbar fina para o texto */
+.scrollable-text::-webkit-scrollbar {
+  width: 6px;
+}
+.scrollable-text::-webkit-scrollbar-track {
+  background: #121212;
+}
+.scrollable-text::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 3px;
+}
+
+/* Botão com brilho */
+.btn-glow {
+  transition: all 0.3s ease;
+}
+.btn-glow:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(211, 47, 47, 0.4) !important;
+}
+
+.hover-back:hover {
+  color: white !important;
+}
+
+.transition-swing {
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 </style>
