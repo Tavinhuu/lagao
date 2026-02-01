@@ -1,11 +1,12 @@
 <template>
   <v-app>
     <Cabecalho />
-    <CarouselBanner />
-    <v-main>
-      <router-view class="bg-white text-black"></router-view>
-      <WhatsAppButton />
+    
+    <v-main class="background-cinza">
+      <CarouselBanner /> <router-view></router-view>
     </v-main>
+
+    <WhatsAppButton />
     <Rodape />
   </v-app>
 </template>
@@ -18,23 +19,12 @@ import CarouselBanner from './components/CarouselBanner.vue';
 
 export default {
   name: 'App',
-  components: {
-    Cabecalho,
-    Rodape,
-    WhatsAppButton,
-    CarouselBanner,
-
-  }
+  components: { Cabecalho, Rodape, WhatsAppButton, CarouselBanner }
 }
 </script>
+
 <style>
-body {
-  background-color: white !important;
-  color: black !important;
-}
-</style>
-<style scoped>
-.v-main {
-  padding-top: 0 !important;
+.background-cinza {
+  background-color: #f5f5f5; /* Cor de fundo suave para destacar os cards brancos */
 }
 </style>

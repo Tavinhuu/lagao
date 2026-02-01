@@ -1,125 +1,76 @@
 <template>
-  <v-app-bar app color="black" height="116px" dark class="px-4">
-    <v-container fluid>
-      <v-row class="align-center justify-space-between">
-        <v-col cols="2" class="d-flex d-sm-none align-center">
-          <v-app-bar-nav-icon @click="drawer = !drawer" />
-        </v-col>
+  <div>
+    <v-app-bar app color="black" dark elevate-on-scroll>
+      <v-app-bar-nav-icon 
+        class="d-md-none" 
+        @click="drawer = !drawer"
+      ></v-app-bar-nav-icon>
 
-        <v-col
-          cols="3"
-          sm="3"
-          class="d-flex justify-center justify-sm-start align-center"
-        >
-          <router-link to="/">
-            <v-img
-              src="/assets/avatar2.png"
-              max-height="64"
-              max-width="150"
-              class="cursor-pointer"
-            />
-          </router-link>
-        </v-col>
+      <router-link to="/" class="d-flex align-center text-decoration-none">
+        <v-img
+          src="/assets/avatar2.png"
+          max-height="50"
+          max-width="120"
+          contain
+          class="mr-4"
+        />
+      </router-link>
 
-        <v-col
-          sm="6"
-          class="d-none d-sm-flex justify-center"
-        >
-          <v-btn
-            v-for="(item, index) in menuItems"
-            :key="index"
-            text
-            :to="item.link"
-            class="text-capitalize text-h6"
-            :class="{ 'active-link': isActive(item.link) }"
-          >
-            {{ item.title }}
-          </v-btn>
-        </v-col>
+      <v-spacer></v-spacer>
 
-        <v-col
-          cols="3"
-          class="d-flex justify-end align-center"
+      <div class="d-none d-md-flex align-center gap-4">
+        <v-btn
+          v-for="(item, index) in menuItems"
+          :key="index"
+          text
+          :to="item.link"
+          class="text-capitalize subtitle-1 font-weight-regular"
+          active-class="red--text font-weight-bold"
         >
-          <!-- <v-btn
-            text
-            to="/login"
-            class="text-capitalize text-h6"
-            :class="{ 'active-link': isActive('/login') }"
-          >
-            Login
-          </v-btn> -->
-        </v-col>
-      </v-row>
-    </v-container>
+          {{ item.title }}
+        </v-btn>
+      </div>
+
+      </v-app-bar>
 
     <v-navigation-drawer
       v-model="drawer"
+      app
       temporary
-      class="mobile-drawer d-sm-none"
+      color="grey darken-4"
+      dark
     >
-      <v-list class="d-flex flex-column justify-center align-center fill-height">
-        <v-list-item
-          v-for="(item, index) in menuItems"
-          :key="index"
-          @click="navigateTo(item.link)"
-        >
-          <v-list-item-title>{{ item.title }}</v-list-item-title>
-        </v-list-item>
+      <v-list nav dense>
+        <v-list-item-group active-class="red--text text--lighten-1">
+          <v-list-item
+            v-for="(item, index) in menuItems"
+            :key="index"
+            :to="item.link"
+          >
+            <v-list-item-title class="text-h6">{{ item.title }}</v-list-item-title>
+          </v-list-item>
+        </v-list-item-group>
       </v-list>
     </v-navigation-drawer>
-  </v-app-bar>
+  </div>
 </template>
 
 <script>
 export default {
   name: 'IndexCabecalho',
-  data() {
-    return {
-      drawer: false
-    };
-  },
-  computed: {
-    menuItems() {
-      return [
-        { title: "Home", link: "/" },
-        { title: "Quem somos", link: "/quemsomos" },
-        { title: "Cursos", link: "/cursos" },
-        { title: "Viagens", link: "/viagens" },
-        { title: "Agenda", link: "/agenda" }
-      ];
-    }
-  },
-  methods: {
-    isActive(route) {
-      return this.$route.path === route;
-    },
-    navigateTo(route) {
-      this.drawer = false;
-      this.$router.push(route);
-    }
-  }
+  data: () => ({
+    drawer: false,
+    menuItems: [
+      { title: "Home", link: "/" },
+      { title: "Quem somos", link: "/quemsomos" },
+      { title: "Cursos", link: "/cursos" },
+      { title: "Viagens", link: "/viagens" },
+      { title: "Agenda", link: "/agenda" }
+    ]
+  })
 };
 </script>
 
 <style scoped>
-.active-link {
-  color: red !important;
-  font-weight: bold;
-}
-.v-app-bar {
-  z-index: 20 !important;
-}
-.text-capitalize {
-  text-transform: none;
-}
-.cursor-pointer {
-  cursor: pointer;
-}
-.mobile-drawer {
-  position: absolute !important;
-  top: 116px !important;
-  height: calc(100vh - 116px) !important;
-  z-index: 19;
-}
+/* Não precisamos de CSS customizado aqui, o Vuetify resolve tudo */
 </style>
