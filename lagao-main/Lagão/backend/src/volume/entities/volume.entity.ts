@@ -30,7 +30,12 @@ export class Volume {
     @JoinColumn({ name: 'curso_id'})
     public curso: Curso | null;
 
-    @ManyToOne(() => CategoriaCurso, (categoria) => categoria.volume, {nullable: true})
+    // AQUI ESTAVA O PROBLEMA DO DELETE:
+    // Adicionamos onDelete: 'CASCADE' para liberar a exclusão
+    @ManyToOne(() => CategoriaCurso, (categoria) => categoria.volume, {
+        nullable: true, 
+        onDelete: 'CASCADE' 
+    })
     @JoinColumn({ name: 'categoria_curso_id'})
     public categoriaCurso: CategoriaCurso | null;
 

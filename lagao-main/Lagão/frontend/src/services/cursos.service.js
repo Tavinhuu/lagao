@@ -1,14 +1,26 @@
-import axiosApi from "@/plugins/axios";
+import http from "@/plugins/axios";
 
-const cursoService = {
-    async getCursos() {
-        try {
-            const response = await axiosApi.get('/cursos')
-            return response.data
-        } catch (error) {
-            console.error(error)
-        }
-    }
+class CursosService {
+  // Padronizamos para getAll (igual ao Admin)
+  getAll() {
+    return http.get('/cursos')
+  }
+
+  get(id) {
+    return http.get(`/cursos/${id}`)
+  }
+
+  create(data) {
+    return http.post('/cursos', data)
+  }
+
+  update(id, data) {
+    return http.patch(`/cursos/${id}`, data)
+  }
+
+  delete(id) {
+    return http.delete(`/cursos/${id}`)
+  }
 }
 
-export default cursoService
+export default new CursosService();

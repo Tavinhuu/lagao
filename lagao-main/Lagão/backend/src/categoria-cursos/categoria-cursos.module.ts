@@ -1,12 +1,14 @@
 import { Module } from '@nestjs/common';
 import { CategoriaCursosService } from './categoria-cursos.service';
 import { CategoriaCursosController } from './categoria-cursos.controller';
-import { CategoriaCurso } from './entities/categoria-curso.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Curso } from 'src/cursos/entities/curso.entity';
+import { CategoriaCurso } from './entities/categoria-curso.entity';
+// 1. Importar a entidade Volume
+import { Volume } from 'src/volume/entities/volume.entity'; 
 
 @Module({
-  imports: [TypeOrmModule.forFeature([CategoriaCurso, Curso])],
+  // 2. Adicionar Volume dentro do array forFeature
+  imports: [TypeOrmModule.forFeature([CategoriaCurso, Volume])], 
   controllers: [CategoriaCursosController],
   providers: [CategoriaCursosService],
 })

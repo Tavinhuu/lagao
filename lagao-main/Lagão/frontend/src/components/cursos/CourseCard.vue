@@ -9,7 +9,7 @@
     >
       <div class="image-wrapper">
         <v-img 
-          :src="curso.volume?.url || '@/assets/logo.png'" 
+          :src="imagemCurso" 
           height="220px" 
           cover
           class="card-img"
@@ -52,9 +52,12 @@
             block
             color="#D32F2F"
             class="font-weight-bold text-button hover-underline pa-0 justify-start"
+            :href="linkWhatsapp"
+            target="_blank"
+            @click.stop
           >
             SAIBA MAIS 
-            <v-icon right small>mdi-arrow-right</v-icon>
+            <v-icon right small>mdi-whatsapp</v-icon>
           </v-btn>
         </div>
       </div>
@@ -71,6 +74,20 @@ export default {
       required: true
     },
   },
+  computed: {
+    imagemCurso() {
+      // Verifica se existe volume e se é um array com itens
+      if (this.curso.volume && Array.isArray(this.curso.volume) && this.curso.volume.length > 0) {
+        return this.curso.volume[0].url;
+      }
+      // Se não tiver imagem, retorna uma padrão ou null
+      return 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=600&q=80';
+    },
+    linkWhatsapp() {
+      const nomeCurso = encodeURIComponent(this.curso.nome || 'Curso de Mergulho');
+      return `https://api.whatsapp.com/send?phone=55998385830&text=Olá%2C+desejo+mais+informações+a+respeito+do+curso+%2A${nomeCurso}%2A`;
+    }
+  }
 };
 </script>
 
@@ -82,7 +99,7 @@ export default {
   border: 1px solid rgba(255, 255, 255, 0.05) !important;
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   cursor: pointer;
-  height: 100%; /* Garante que todos os cards tenham a mesma altura base */
+  height: 100%;
 }
 
 .course-card.on-hover {
@@ -118,7 +135,6 @@ export default {
 /* ==============================
    TIPOGRAFIA & UTILITÁRIOS
    ============================== */
-/* Limita o texto a X linhas e adiciona '...' */
 .line-clamp-2 {
   display: -webkit-box;
   -webkit-line-clamp: 2;

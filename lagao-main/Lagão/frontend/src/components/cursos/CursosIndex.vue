@@ -95,7 +95,6 @@
 </template>
 
 <script>
-// Ajustei os imports para usar @ (caminho absoluto) para evitar erros
 import CourseCard from '@/components/cursos/CourseCard.vue';
 import CourseDetails from '@/components/cursos/CousrsesDetails.vue';
 import cursoService from "@/services/cursos.service";
@@ -119,28 +118,25 @@ export default {
   },
   computed: {
     categoriaAtual() {
-      // Se tiver algo na store global, usa. Senão, pega da aba atual.
       return globalState.categoriaSelecionada || this.categorias[this.tab];
     },
     cursosFiltrados() {
-      // Pega a categoria baseada na aba selecionada (mais confiável para navegação local)
       const categoriaDaAba = this.categorias[this.tab];
 
       if (!this.categorias.length || !this.cursos.length || !categoriaDaAba) return [];
 
       return this.cursos
         .filter(curso => {
-          // Verifica se o curso pertence à categoria da aba atual
-          return curso.categorias?.some(cat => cat.categoriaId === categoriaDaAba.id);
+          // CORREÇÃO: O backend retorna 'categoriaCurso' (objeto), não 'categorias' (array)
+          // Verificamos se o curso tem categoria e se o ID bate com a aba atual
+          return curso.categoriaCurso && (curso.categoriaCurso.id === categoriaDaAba.id);
         })
         .map(curso => {
-          // Lógica original para mesclar dados da categoria no curso
-          const categoriaDoCurso = curso.categorias.find(cat => cat.categoriaId === categoriaDaAba.id);
+          // Retornamos o curso. Se precisar sobrescrever nome/descrição com dados da categoria, faça aqui.
+          // Por padrão, vamos usar os dados do próprio curso.
           return {
             ...curso,
-            nome: categoriaDoCurso?.titulo || curso.nome,
-            descricao: categoriaDoCurso?.descricao || curso.descricao,
-            descricaoTeorico: categoriaDoCurso?.descricaoTeorico || curso.descricaoTeorico,
+            // Se quiser fallback: nome: curso.nome || categoriaDaAba.nome
           };
         });
     }
@@ -149,14 +145,19 @@ export default {
     async pegarDados() {
       try {
         this.loading = true;
-        // Carrega tudo em paralelo
-        const [cursosData, categoriasData] = await Promise.all([
-          cursoService.getCursos(),
+        // CORREÇÃO: cursoService.getAll() ao invés de getCursos()
+        const [cursosResponse, categoriasResponse] = await Promise.all([
+          cursoService.getAll(),
           categoriaCursosService.getCategoriaCursos()
         ]);
         
-        this.cursos = cursosData;
-        this.categorias = categoriasData;
+        // CORREÇÃO: O axios retorna o objeto response completo, os dados estão em .data
+        // Verificamos se veio .data ou se já é o array (dependendo do seu interceptor)
+        this.cursos = cursosResponse.data || cursosResponse;
+        
+        // O service de categoriaCurso que você enviou retorna response.data direto, então ok:
+        this.categorias = categoriasResponse; 
+        
       } catch (error) {
         console.error("Erro ao buscar dados:", error);
       } finally {
@@ -165,18 +166,15 @@ export default {
     },
     mostrarDetalhes(curso) {
       this.cursoSelecionado = curso;
-      // Scroll suave para o topo ao abrir detalhes
       this.$vuetify.goTo(0);
     }
   },
   mounted() {
     this.pegarDados().then(() => {
-      // Sincroniza a aba se vier da Home clicando em uma categoria específica
       if (globalState.categoriaSelecionada) {
         const index = this.categorias.findIndex(cat => cat.id === globalState.categoriaSelecionada.id);
         if (index !== -1) {
           this.tab = index;
-          // Limpa o estado global para não travar a navegação depois
           globalState.categoriaSelecionada = null; 
         }
       }
@@ -186,61 +184,33 @@ export default {
 </script>
 
 <style scoped>
-/* ==============================
-   ESTILOS GERAIS
-   ============================== */
 .courses-wrapper {
   background-color: #121212;
   min-height: 100vh;
   font-family: 'Roboto', sans-serif;
 }
-
-.tracking-widest {
-  letter-spacing: 3px !important;
-}
-
+.tracking-widest { letter-spacing: 3px !important; }
 .gradient-line {
   width: 60px;
   height: 4px;
   background: linear-gradient(90deg, #D32F2F 0%, #ff7961 100%);
   border-radius: 4px;
 }
-
-/* ==============================
-   ESTILIZAÇÃO DAS ABAS (TABS)
-   ============================== */
-.custom-tabs {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-/* Aba inativa */
+.custom-tabs { border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
 .v-tab {
   text-transform: capitalize !important;
   letter-spacing: 0.5px;
   color: rgba(255, 255, 255, 0.6) !important;
   border: 1px solid transparent;
-  margin-bottom: 8px; /* Espaço para o scrollbar não colar */
+  margin-bottom: 8px;
 }
-
-/* Aba ativa (Estado "Pill" vermelho) */
 .active-tab-glow {
   background-color: #D32F2F !important;
   color: white !important;
   border-color: #D32F2F !important;
-  box-shadow: 0 0 15px rgba(211, 47, 47, 0.4); /* Glow effect */
+  box-shadow: 0 0 15px rgba(211, 47, 47, 0.4);
 }
-
-/* Remover a linha padrão do Vuetify embaixo da aba */
-::v-deep .v-tabs-slider {
-  display: none !important;
-}
-
-.transition-swing {
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-}
-
-/* Utilitário de largura */
-.w-100 {
-  width: 100%;
-}
+::v-deep .v-tabs-slider { display: none !important; }
+.transition-swing { transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); }
+.w-100 { width: 100%; }
 </style>

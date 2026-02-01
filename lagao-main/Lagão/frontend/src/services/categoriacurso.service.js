@@ -7,7 +7,21 @@ const categoriaCursosService = {
             return response.data
         } catch (error) {
             console.error(error)
+            return []
         }
+    },
+
+    // Novos métodos
+    async create(data) {
+        return axiosApi.post('/categoria-cursos', data)
+    },
+
+    async update(id, data) {
+        return axiosApi.patch(`/categoria-cursos/${id}`, data)
+    },
+
+    async delete(id) {
+        return axiosApi.delete(`/categoria-cursos/${id}`)
     }
 }
 

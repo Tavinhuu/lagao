@@ -12,11 +12,12 @@ export class CategoriaCurso {
     @Column({name: 'descricao', type:'varchar'})
     public descricao:string
 
-    @OneToOne(() => Volume, (volume) => volume.id, {eager:true})
+    // CORREÇÃO AQUI: Mudamos de (v)=>v.id para (v)=>v.categoriaCurso
+    @OneToOne(() => Volume, (volume) => volume.categoriaCurso, {eager:true})
     @JoinColumn({ name: 'volume_id' })
     volume: number | Volume;
 
-    @OneToMany(() => Curso, (curso) => curso.categoriaCurso, {eager:true})
+    // REMOVI O 'eager:true' AQUI PARA EVITAR LOOPS E MELHORAR PERFORMANCE (COMO DISCUTIMOS ANTES)
+    @OneToMany(() => Curso, (curso) => curso.categoriaCurso)
     cursos: number[] | Curso[];
-    
 }

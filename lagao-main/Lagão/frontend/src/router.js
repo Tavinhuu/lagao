@@ -8,12 +8,24 @@ import Cursos from './pages/cursos/index.vue'
 import FaleConosco from './pages/faleConosco/index.vue'
 import Loja from './pages/loja/index.vue'
 import Midia from './pages/midia/index.vue'
+import CursosAdmin from './pages/admin/CursosAdmin.vue';
+import CategoriasAdmin from './pages/admin/CategoriasAdmin.vue';
 import Viagens from './pages/viagens/index.vue'
 import NotFound from './components/layout/notFound.vue'
 
 Vue.use(VueRouter)
 
 const routes = [
+  {
+    path: '/admin/cursos',
+    name: 'AdminCursos',
+    component: CursosAdmin
+  },
+  {
+  path: '/admin/categorias',
+  name: 'AdminCategorias',
+  component: CategoriasAdmin
+},
   { path: '/', component: Home },
   { path: '/quemsomos', component: QuemSomos },
   { path: '/agenda', component: Agenda },
