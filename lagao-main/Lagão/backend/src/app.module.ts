@@ -9,10 +9,11 @@ import { HomePageModule } from './home-page/home-page.module';
 import { AgendaModule } from './agenda/agenda.module';
 import { EquipeModule } from './equipe/equipe.module';
 import { AuthModule } from './auth/auth.module';
+import { YoutubeModule } from './youtube/youtube.module';
 
 
 @Module({
-  imports: [CursosModule, CategoriaCursosModule, VolumeModule, ViagensModule, DepoimentosModule, HomePageModule, EquipeModule, AuthModule, AgendaModule,
+  imports: [CursosModule, CategoriaCursosModule, VolumeModule, ViagensModule, DepoimentosModule,YoutubeModule, HomePageModule, EquipeModule, AuthModule, AgendaModule,
       TypeOrmModule.forRoot({
       type: 'postgres',
       host: '82.29.62.101',
