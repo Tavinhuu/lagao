@@ -11,7 +11,6 @@ import { EquipeModule } from './equipe/equipe.module';
 import { AuthModule } from './auth/auth.module';
 import { YoutubeModule } from './youtube/youtube.module';
 
-
 @Module({
   imports: [CursosModule, CategoriaCursosModule, VolumeModule, ViagensModule, DepoimentosModule,YoutubeModule, HomePageModule, EquipeModule, AuthModule, AgendaModule,
       TypeOrmModule.forRoot({
