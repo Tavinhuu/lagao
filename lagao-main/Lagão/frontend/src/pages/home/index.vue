@@ -130,7 +130,7 @@
         <div class="text-center mb-10 mb-md-16">
           <v-icon size="40" color="#D32F2F" class="mb-4">mdi-camera-burst</v-icon>
           <h2 class="text-h4 text-md-h2 font-weight-black white--text text-uppercase">
-            Últimas Expedições
+            Lagão pelo mundo
           </h2>
           <p class="grey--text text--darken-1 mt-2 text-subtitle-1">
             Veja por onde já passamos e inspire-se para a próxima
@@ -175,8 +175,93 @@
       </v-container>
     </section>
 
+    <section class="section-spacing" style="background-color: #0F0F0F; border-top: 1px solid #222;">
+      <v-container>
+        <div class="text-center mb-12">
+          <h2 class="text-overline red--text font-weight-bold mb-2 tracking-widest">
+            AGENDA ABERTA
+          </h2>
+          <h1 class="text-h4 text-md-h2 font-weight-black white--text text-uppercase">
+            Próximas Expedições
+          </h1>
+          <div class="mx-auto gradient-line mt-4"></div>
+        </div>
+
+        <v-row v-if="expedicoes.length">
+          <v-col 
+            v-for="exp in expedicoes" :key="exp.id"
+            cols="12" md="4"
+            class="d-flex"
+          >
+            <v-hover v-slot="{ hover }">
+              <v-card 
+                class="course-card rounded-xl flex-grow-1 d-flex flex-column"
+                :elevation="hover ? 24 : 6"
+                color="#1a1a1a"
+                :class="{ 'on-hover': hover }"
+              >
+                <div class="image-wrapper rounded-t-xl">
+                  <v-img 
+                    :src="exp.volume && exp.volume[0] ? exp.volume[0].url : 'https://via.placeholder.com/400'" 
+                    height="250px" 
+                    cover
+                    class="zoom-image"
+                    :class="{ 'zoomed': hover }"
+                  >
+                    <div class="d-flex justify-end pa-4">
+                       <v-chip 
+                         color="red darken-1" 
+                         label 
+                         class="font-weight-bold white--text elevation-4"
+                       >
+                         <v-icon left small>mdi-calendar</v-icon>
+                         {{ formataData(exp.dataInicio) }}
+                       </v-chip>
+                    </div>
+                    
+                    <div class="image-gradient"></div>
+                  </v-img>
+                </div>
+
+                <div class="d-flex flex-column flex-grow-1 pa-6 relative z-index-2">
+                  <h3 class="text-h5 font-weight-bold white--text mb-2">
+                    {{ exp.local }}
+                  </h3>
+                  
+                  <p class="grey--text text--lighten-1 flex-grow-1 text-body-2 line-clamp-3">
+                    {{ truncateText(exp.descricao, 120) }}
+                  </p>
+
+                  <v-divider class="grey darken-3 my-4"></v-divider>
+
+                  <div class="d-flex align-center justify-end mt-auto">
+                    <v-btn 
+                      :color="hover ? 'red darken-1' : 'white'" 
+                      :outlined="!hover"
+                      :dark="hover"
+                      rounded
+                      class="px-8 font-weight-bold transition-swing"
+                      @click.stop="abrirWhatsapp(exp)"
+                    >
+                      SAIBA MAIS
+                      <v-icon right small>mdi-arrow-right</v-icon>
+                    </v-btn>
+                  </div>
+                </div>
+              </v-card>
+            </v-hover>
+          </v-col>
+        </v-row>
+        
+        <div v-else class="text-center grey--text">
+           Em breve novas datas.
+        </div>
+
+      </v-container>
+    </section>
 
   </div>
+
 </template>
 
 <script>
@@ -188,6 +273,7 @@ import PodcastSection from '@/components/home/PodcastSection.vue';
 // Services
 import viagensService from '@/services/viagens.service';
 import depoimentosService from '@/services/depoimentos.service';
+import expedicoesService from '@/services/expedicoes.service';
 import categoriaCursosService from '@/services/categoriacurso.service';
 import { mutations } from "@/store";
 
@@ -202,6 +288,7 @@ export default {
     return {
       loading: true,
       viagens: [],
+      expedicoes: [],
       categorias: [],
       depoimentos: [],
       viagemAtual: 0,
@@ -209,6 +296,20 @@ export default {
     };
   },
   methods: {
+    abrirWhatsapp(expedicao) {
+      const numero = "55998385830";
+
+      const mensagem = `Olá, desejo mais informações a respeito da expedição *${expedicao.local}*`;
+      
+      const url = `https://api.whatsapp.com/send?phone=${numero}&text=${encodeURIComponent(mensagem)}`;
+
+      window.open(url, '_blank');
+    },
+    formataData(data) {
+    if(!data) return '';
+    const date = new Date(data);
+    return date.toLocaleDateString('pt-BR');
+},
     irParaCursos(categoria) {
       mutations.setCategoria(categoria);
       this.$router.push({ name: 'Cursos' });
@@ -221,10 +322,11 @@ export default {
     async pegarDados() {
       try {
         this.loading = true;
-        const [viagensRes, categoriasData, depoimentosData] = await Promise.all([
+        const [viagensRes, categoriasData, expedicoesRes, depoimentosData] = await Promise.all([
           viagensService.getAll().catch(() => ({ data: [] })), 
           categoriaCursosService.getCategoriaCursos().catch(() => []),
-          depoimentosService.getDepoimentos().catch(() => [])
+          expedicoesService.getAll().catch(() => ({ data: [] })), // 3º item é expedição
+          depoimentosService.getDepoimentos().catch(() => [])     // 4º item é depoimento
         ]);
 
         // Filtro Viagens (Top 5 mais recentes)
@@ -235,6 +337,7 @@ export default {
 
         this.categorias = categoriasData;
         this.depoimentos = depoimentosData;
+        this.expedicoes = expedicoesRes.data || [];
       } catch (error) {
         console.error("Erro ao carregar dados:", error);
       } finally {

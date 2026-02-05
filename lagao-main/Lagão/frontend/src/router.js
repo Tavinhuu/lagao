@@ -31,6 +31,9 @@ const routes = [
   },
 
   // Módulos Admin (Protegidos)
+  { path: '/admin/parceiros', component: () => import('./pages/admin/ParceirosAdmin.vue'), meta: { requiresAuth: true } },
+  { path: '/admin/loja', component: () => import('./pages/admin/LojaAdmin.vue'), meta: { requiresAuth: true } },
+  { path: '/admin/expedicoes', component: () => import('./pages/admin/ExpedicoesAdmin.vue'), meta: { requiresAuth: true } },
   { path: '/admin/cursos', component: () => import('./pages/admin/CursosAdmin.vue'), meta: { requiresAuth: true } },
   { path: '/admin/categorias', component: () => import('./pages/admin/CategoriasAdmin.vue'), meta: { requiresAuth: true } },
   { path: '/admin/viagens', component: () => import('./pages/admin/ViagensAdmin.vue'), meta: { requiresAuth: true } },

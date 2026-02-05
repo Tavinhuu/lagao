@@ -48,7 +48,10 @@ export default {
       { title: 'Agenda', subtitle: 'Eventos e Datas', icon: 'mdi-calendar-clock', color: 'green darken-2', to: '/admin/agenda' },
       { title: 'Viagens', subtitle: 'Portfólio de Expedições', icon: 'mdi-airplane', color: 'orange darken-3', to: '/admin/viagens' },
       { title: 'Equipe', subtitle: 'Instrutores e Staff', icon: 'mdi-account-group', color: 'teal darken-2', to: '/admin/equipe' },
-      { title: 'Depoimentos', subtitle: 'Voz da Tribo', icon: 'mdi-comment-quote', color: 'purple darken-2', to: '/admin/depoimentos' },
+      { title: 'Depoimentos', subtitle: 'Feedbacks', icon: 'mdi-comment-quote', color: 'purple darken-2', to: '/admin/depoimentos' },
+      { title: 'Expedições', subtitle: 'Próximas expedições', icon: 'mdi-calendar-clock', color: 'purple darken-2', to: '/admin/expedicoes' },
+      { title: 'Loja', subtitle: 'Imagens da loja', icon: 'mdi-school', color: 'purple darken-2', to: '/admin/loja' },
+      { title: 'Parceiros', subtitle: 'Parceiros', icon: 'mdi-account-group', color: 'teal darken-2', to: '/admin/parceiros' },
     ]
   }),
   methods: {
