@@ -235,8 +235,6 @@ export default {
 
     async save() {
       try {
-        // CORREÇÃO: Montamos um payload limpo, APENAS com os campos que o backend espera.
-        // Isso remove campos como 'volume', 'agendas', 'createdAt' que causam erro no preload.
         const payload = {
           nome: this.editedItem.nome,
           descricao: this.editedItem.descricao,
