@@ -152,16 +152,25 @@ export default {
 
     async save() {
       try {
-        const payload = { ...this.editedItem };
+
+        const payload = {
+          nome: this.editedItem.nome,
+          descricao: this.editedItem.descricao,
+          urlImagem: this.editedItem.urlImagem,
+        };
+
         if (this.editedIndex > -1) {
           await CategoriaService.update(this.editedItem.id, payload);
         } else {
-          delete payload.id;
           await CategoriaService.create(payload);
         }
+        
         await this.initialize();
         this.close();
-      } catch (error) { alert("Erro ao salvar categoria."); }
+      } catch (error) {
+        console.error("Erro detalhado:", error);
+        alert("Erro ao salvar categoria.");
+      }
     }
   },
 };

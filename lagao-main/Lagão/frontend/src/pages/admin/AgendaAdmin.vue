@@ -130,10 +130,31 @@ export default {
     close() { this.dialog = false; }, closeDelete() { this.dialogDelete = false; },
     
     async save() {
-      const payload = { ...this.editedItem };
-      if (this.editedIndex > -1) await AgendaService.update(this.editedItem.id, payload);
-      else { delete payload.id; await AgendaService.create(payload); }
-      await this.initialize(); this.close();
+      try {
+        // 1. Limpar Payload: Enviar apenas os campos esperados pelo DTO
+        const payload = {
+          titulo: this.editedItem.titulo,
+          descricao: this.editedItem.descricao,
+          local: this.editedItem.local,
+          // 2. Corrigir Data: Converter o valor do input (YYYY-MM-DDTHH:mm) 
+          // para formato ISO completo aceito pelo backend (YYYY-MM-DDTHH:mm:ss.sssZ)
+          data: new Date(this.editedItem.data).toISOString()
+        };
+
+        if (this.editedIndex > -1) {
+          await AgendaService.update(this.editedItem.id, payload);
+        } else {
+          await AgendaService.create(payload);
+        }
+        
+        await this.initialize();
+        this.close();
+        
+      } catch (error) {
+        console.error("Erro ao salvar evento:", error);
+        // Agora você verá um alerta se houver erro
+        alert("Erro ao salvar. Verifique se a data e o título estão preenchidos corretamente.");
+      }
     }
   },
 };

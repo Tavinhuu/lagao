@@ -95,10 +95,28 @@ export default {
     },
     close() { this.dialog = false; }, closeDelete() { this.dialogDelete = false; },
     async save() {
-      const payload = { ...this.editedItem };
-      if (this.editedIndex > -1) await EquipeService.update(this.editedItem.id, payload);
-      else { delete payload.id; await EquipeService.create(payload); }
-      await this.initialize(); this.close();
+      try {
+        const payload = {
+          nome: this.editedItem.nome,
+          cargo: this.editedItem.cargo,
+          descricao: this.editedItem.descricao,
+          urlImagem: this.editedItem.urlImagem
+        };
+
+        if (this.editedIndex > -1) {
+          // Update
+          await EquipeService.update(this.editedItem.id, payload);
+        } else {
+          // Create
+          await EquipeService.create(payload);
+        }
+        
+        await this.initialize();
+        this.close();
+      } catch (error) {
+        console.error("Erro ao salvar equipe:", error);
+        alert("Erro ao salvar. Verifique o console.");
+      }
     }
   },
 };

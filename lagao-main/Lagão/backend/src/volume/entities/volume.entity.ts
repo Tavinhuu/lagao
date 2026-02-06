@@ -3,6 +3,9 @@ import { Curso } from "src/cursos/entities/curso.entity";
 import { Viagem } from "src/viagens/entities/viagem.entity";
 import { Equipe } from "src/equipe/entities/equipe.entity";
 import { Depoimento } from "src/depoimentos/entities/depoimento.entity";
+import { Expedicao } from "src/expedicoes/entities/expedicao.entity";
+import { Loja } from "src/loja/entities/loja.entity";
+import { Parceiro } from "src/parceiros/entities/parceiro.entity";
 
 import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
@@ -47,12 +50,31 @@ export class Volume {
     })
     @JoinColumn({ name: 'categoria_curso_id'})
     public categoriaCurso: CategoriaCurso | null;
-
-    // AQUI ESTÁ A CORREÇÃO: Adicionamos onDelete: 'CASCADE'
     @ManyToOne(() => Viagem, (viagem) => viagem.volume, {
         nullable: true,
         onDelete: 'CASCADE'
     })
     @JoinColumn({ name: 'viagem_id' })
     public viagem: Viagem | null;
+
+    @ManyToOne(() => Expedicao, (expedicao) => expedicao.volume, {
+        nullable: true,
+        onDelete: 'CASCADE'
+    })
+    @JoinColumn({ name: 'expedicao_id' })
+    public expedicao: Expedicao | null;
+
+    @ManyToOne(() => Loja, (loja) => loja.galeria, {
+        nullable: true,
+        onDelete: 'CASCADE'
+    })
+    @JoinColumn({ name: 'loja_id' })
+    public loja: Loja | null;
+
+    @ManyToOne(() => Parceiro, (parceiro) => parceiro.logo, {
+        nullable: true,
+        onDelete: 'CASCADE'
+    })
+    @JoinColumn({ name: 'parceiro_id' })
+    public parceiro: Parceiro | null;
 }

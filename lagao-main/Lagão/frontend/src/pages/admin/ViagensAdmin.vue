@@ -199,19 +199,25 @@ export default {
 
     async save() {
       try {
-        const payload = { ...this.editedItem };
-        
+        const payload = {
+          destino: this.editedItem.destino,
+          descricao: this.editedItem.descricao,
+          inicioViagem: this.editedItem.inicioViagem, // Já está no formato YYYY-MM-DD do input date
+          fimViagem: this.editedItem.fimViagem,       // Já está no formato YYYY-MM-DD do input date
+          urlImagem: this.editedItem.urlImagem
+        };
+
         if (this.editedIndex > -1) {
           await ViagensService.update(this.editedItem.id, payload);
         } else {
-          delete payload.id;
           await ViagensService.create(payload);
         }
+        
         await this.initialize();
         this.close();
-      } catch (error) { 
-        console.error(error);
-        alert("Erro ao salvar."); 
+      } catch (error) {
+        console.error("Erro detalhado:", error);
+        alert("Erro ao salvar. Verifique se as datas estão preenchidas.");
       }
     }
   },

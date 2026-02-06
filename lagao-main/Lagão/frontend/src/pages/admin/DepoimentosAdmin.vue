@@ -192,20 +192,29 @@ export default {
 
     async save() {
       try {
-        const payload = { ...this.editedItem };
-        if (payload.rating) payload.rating = Number(payload.rating);
+        const payload = {
+          nome: this.editedItem.nome,
+          titulo: this.editedItem.titulo,
+          texto: this.editedItem.texto,
+          local: this.editedItem.local,
+          rating: Number(this.editedItem.rating), // Garante que é número
+          data: this.editedItem.data,
+          urlImagem: this.editedItem.urlImagem
+        };
 
         if (this.editedIndex > -1) {
+          // Update
           await DepoimentosService.update(this.editedItem.id, payload);
         } else {
-          delete payload.id;
+          // Create
           await DepoimentosService.create(payload);
         }
+        
         await this.initialize();
         this.close();
       } catch (error) { 
-        console.error(error);
-        alert("Erro ao salvar. Verifique se todos os campos estão preenchidos."); 
+        console.error("Erro detalhado:", error);
+        alert("Erro ao salvar. Verifique o console para mais detalhes."); 
       }
     }
   },

@@ -235,26 +235,32 @@ export default {
 
     async save() {
       try {
-        const payload = { ...this.editedItem };
-        
-        // Garante que enviamos um número para o backend
-        if (payload.categoriaCurso) {
-            payload.categoriaCurso = Number(payload.categoriaCurso);
-        }
+        // CORREÇÃO: Montamos um payload limpo, APENAS com os campos que o backend espera.
+        // Isso remove campos como 'volume', 'agendas', 'createdAt' que causam erro no preload.
+        const payload = {
+          nome: this.editedItem.nome,
+          descricao: this.editedItem.descricao,
+          urlImagem: this.editedItem.urlImagem,
+          descricaoTeorico: this.editedItem.descricaoTeorico,
+          descricaoAguasConfinadas: this.editedItem.descricaoAguasConfinadas,
+          descricaoAguasAbertas: this.editedItem.descricaoAguasAbertas,
+          // Garante que é número ou null
+          categoriaCurso: this.editedItem.categoriaCurso ? Number(this.editedItem.categoriaCurso) : null,
+        };
 
         if (this.editedIndex > -1) {
+          // No update, passamos o ID na URL e o payload limpo no corpo
           await CursosService.update(this.editedItem.id, payload);
-          // Recarrega tudo para atualizar a tabela com os nomes corretos das categorias
-          this.initialize(); 
         } else {
-          delete payload.id;
           await CursosService.create(payload);
-          this.initialize();
         }
+        
+        // Atualiza a tabela e fecha
+        this.initialize();
         this.close();
       } catch (error) {
-        console.error(error);
-        alert("Erro ao salvar. Verifique se preencheu todos os campos.");
+        console.error("Erro detalhado:", error); // Ajuda a ver o erro real no console do navegador
+        alert("Erro ao salvar. Verifique o console para mais detalhes.");
       }
     },
   },

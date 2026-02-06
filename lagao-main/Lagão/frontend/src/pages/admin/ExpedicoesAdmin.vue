@@ -241,27 +241,31 @@ export default {
 
     async save() {
       try {
-        const payload = { ...this.editedItem };
+        const payload = {
+            local: this.editedItem.local,
+            descricao: this.editedItem.descricao,
+            dataInicio: this.editedItem.dataInicio,
+            dataFim: this.editedItem.dataFim,
+            valor: this.editedItem.valor,
+            linkPagamento: this.editedItem.linkPagamento,
+            urlImagem: this.editedItem.urlImagem
+        };
 
- 
-        // Transforma string vazia em undefined para não dar erro no backend
         if (!payload.dataFim) delete payload.dataFim;
         if (!payload.linkPagamento) delete payload.linkPagamento;
         if (!payload.urlImagem) delete payload.urlImagem;
-        
-        if (!payload.id) delete payload.id;
 
-        console.log("Enviando payload:", payload);
+        console.log("Enviando payload limpo:", payload);
         
         if (this.editedIndex > -1) {
-          // Update
+          // No Update, o ID vai na URL (primeiro parâmetro), e o corpo (payload) vai sem ID
           await ExpedicoesService.update(this.editedItem.id, payload);
         } else {
-          // Create
-          delete payload.id;
+          // No Create
           await ExpedicoesService.create(payload);
         }
-        await this.initialize(); // Recarrega a lista
+        
+        await this.initialize(); 
         this.close();
       } catch (error) { 
         console.error(error);
