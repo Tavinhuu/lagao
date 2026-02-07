@@ -47,9 +47,12 @@
               
               <h3 class="white--text text-h6 font-weight-bold mb-2">{{ parceiro.nome }}</h3>
               
-              <p class="grey--text text--lighten-1 text-caption mb-0 flex-grow-1" style="line-height: 1.6;">
-                {{ parceiro.descricao }}
-              </p>
+              <p 
+  class="grey--text text--lighten-1 text-caption mb-0 flex-grow-1" 
+  style="line-height: 1.6; white-space: pre-line;"
+>
+  {{ parceiro.descricao }}
+</p>
               
               <v-btn 
                 v-if="parceiro.link" 
