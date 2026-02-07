@@ -6,7 +6,9 @@
       <CarouselBanner /> 
       
       <v-fade-transition mode="out-in">
-        <router-view></router-view>
+        <div id="inicio-conteudo"> 
+           <router-view></router-view>
+        </div>
       </v-fade-transition>
     </v-main>
     <Rodape />

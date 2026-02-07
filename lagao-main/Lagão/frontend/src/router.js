@@ -63,7 +63,22 @@ const routes = [
 
 const router = new VueRouter({
   mode: 'history',
-  routes
+  routes,
+  scrollBehavior(to, from, savedPosition) {
+    if (to.hash) {
+      return { 
+        selector: to.hash,
+        offset: { x: 0, y: 100 } 
+      };
+    } else if (savedPosition) {
+      return savedPosition;
+    } else {
+      if (to.path === '/') {
+        return { x: 0, y: 0 };
+      }
+      return { selector: '#inicio-conteudo', offset: { x: 0, y: 100 } };
+    }
+  }
 })
 
 router.beforeEach((to, from, next) => {

@@ -123,10 +123,10 @@ export default {
     isScrolled: false,
     menuItems: [
       { title: "Home", link: "/" },
-      { title: "a LAGÃO", link: "/quemsomos" },
-      { title: "Cursos", link: "/cursos" },
-      { title: "Viagens", link: "/viagens" },
-      { title: "Agenda", link: "/agenda" }
+      { title: "a LAGÃO", link: "/quemsomos#inicio-conteudo" },
+      { title: "Cursos", link: "/cursos#inicio-conteudo" },
+      { title: "Viagens", link: "/viagens#inicio-conteudo" },
+      { title: "Agenda", link: "/agenda#inicio-conteudo" }
     ]
   }),
   mounted() {
