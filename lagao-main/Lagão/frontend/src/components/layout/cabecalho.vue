@@ -143,7 +143,7 @@ export default {
     getIcon(title) {
       const icons = {
         'Home': 'mdi-home-outline',
-        'Quem somos': 'mdi-account-group-outline',
+        'a LAGÃO': 'mdi-account-group-outline',
         'Cursos': 'mdi-school-outline',
         'Viagens': 'mdi-airplane',
         'Parceiros': 'mdi-handshake',
