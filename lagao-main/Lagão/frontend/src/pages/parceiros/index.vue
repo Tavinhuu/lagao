@@ -49,7 +49,7 @@
               
               <p 
   class="grey--text text--lighten-1 text-caption mb-0 flex-grow-1" 
-  style="line-height: 1.6; white-space: pre-line;"
+  style="line-height: 1.6; white-space: pre-line; text-align: justify;"
 >
   {{ parceiro.descricao }}
 </p>
