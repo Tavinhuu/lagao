@@ -543,6 +543,9 @@ export default {
   background-color: #121212;
   font-family: 'Roboto', sans-serif;
   min-height: 100vh;
+  width: 100%; 
+  overflow-x: hidden;
+  position: relative;  
 }
 
 .section-spacing {

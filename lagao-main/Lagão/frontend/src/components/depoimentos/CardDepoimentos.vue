@@ -72,12 +72,20 @@ export default {
 
 <style scoped>
 .card-depoimento {
+  width: 100%;
+  max-width: 100%; /* Garante que nunca exceda o pai */
   transition: transform 0.3s ease;
-  width: 100%; 
-  margin: 0 auto;
+  margin: 0 auto;  /* Centraliza se sobrar espaço */
 }
 
-.tracking-widest {
-  letter-spacing: 2px;
+.letter-spacing-1 {
+  letter-spacing: 1px;
+}
+
+/* Ajuste fino para mobile */
+@media (max-width: 600px) {
+  .card-depoimento {
+    text-align: center !important;
+  }
 }
 </style>
