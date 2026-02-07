@@ -22,12 +22,12 @@
               dark
               centered
               show-arrows
-              class="custom-tabs"
+              class="tabs-centered-pills"
             >
               <v-tab 
                 v-for="(categoria, index) in categorias" 
                 :key="index"
-                class="rounded-pill mx-1 px-6 font-weight-bold letter-spacing-1 transition-swing"
+                class="rounded-pill mx-2 px-6 font-weight-bold letter-spacing-1 transition-swing"
                 active-class="active-tab-glow"
               >
                 {{ categoria.nome }}
@@ -196,13 +196,18 @@ export default {
   background: linear-gradient(90deg, #D32F2F 0%, #ff7961 100%);
   border-radius: 4px;
 }
+.tabs-centered-pills {
+  border-bottom: none !important;
+}
+
 .custom-tabs { border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
 .v-tab {
   text-transform: capitalize !important;
   letter-spacing: 0.5px;
   color: rgba(255, 255, 255, 0.6) !important;
   border: 1px solid transparent;
-  margin-bottom: 8px;
+  margin-bottom: 0px;
+  min-width: auto;
 }
 .active-tab-glow {
   background-color: #D32F2F !important;
@@ -213,4 +218,14 @@ export default {
 ::v-deep .v-tabs-slider { display: none !important; }
 .transition-swing { transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); }
 .w-100 { width: 100%; }
+
+::v-deep .v-slide-group__content {
+  justify-content: center !important;
+}
+
+@media (max-width: 600px) {
+  ::v-deep .v-slide-group__content {
+    justify-content: flex-start !important; /* No mobile volta ao normal para permitir scroll lateral */
+  }
+}
 </style>

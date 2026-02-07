@@ -8,7 +8,7 @@
       <v-col cols="12" md="4" class="d-flex justify-center">
         <v-avatar size="120" class="elevation-5">
           <img
-            :src="depoimento.foto || '/assets/avatar.png'"
+            :src="(depoimento.volume && depoimento.volume.url) ? depoimento.volume.url : '/assets/avatar.png'"
             alt="Foto do aluno"
             style="object-fit: cover;"
           >
@@ -59,7 +59,8 @@ export default {
       type: Object,
       required: true,
       default: () => ({
-        foto: '',
+        // Ajuste no default para refletir a estrutura real, se necessário
+        volume: { url: '' }, 
         nome: 'Aluno Lagão',
         texto: 'Depoimento incrível...',
         local: '',
@@ -73,16 +74,15 @@ export default {
 <style scoped>
 .card-depoimento {
   width: 100%;
-  max-width: 100%; /* Garante que nunca exceda o pai */
+  max-width: 100%;
   transition: transform 0.3s ease;
-  margin: 0 auto;  /* Centraliza se sobrar espaço */
+  margin: 0 auto;
 }
 
 .letter-spacing-1 {
   letter-spacing: 1px;
 }
 
-/* Ajuste fino para mobile */
 @media (max-width: 600px) {
   .card-depoimento {
     text-align: center !important;
