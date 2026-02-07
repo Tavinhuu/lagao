@@ -123,7 +123,7 @@ export default {
     isScrolled: false,
     menuItems: [
       { title: "Home", link: "/" },
-      { title: "Quem somos", link: "/quemsomos" },
+      { title: "Conheça a Lagão", link: "/quemsomos" },
       { title: "Cursos", link: "/cursos" },
       { title: "Viagens", link: "/viagens" },
       { title: "Agenda", link: "/agenda" }
