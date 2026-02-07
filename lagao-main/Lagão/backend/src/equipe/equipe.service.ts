@@ -31,7 +31,10 @@ export class EquipeService {
   }
 
   async findAll() {
-    return await this.repo.find({ relations: ['volume'], order: { id: 'ASC' } });
+    return await this.repo.find({ 
+      relations: ['volume'], 
+      order: { ordem: 'ASC', id: 'ASC' }
+    });
   }
 
   async findOne(id: number) {

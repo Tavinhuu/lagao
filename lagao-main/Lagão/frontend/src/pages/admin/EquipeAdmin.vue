@@ -28,6 +28,14 @@
           <v-container>
             <v-row>
               <v-col cols="12" sm="6"><v-text-field v-model="editedItem.nome" label="Nome"></v-text-field></v-col>
+  <v-col cols="12" sm="4">
+    <v-text-field 
+      v-model.number="editedItem.ordem" 
+      label="Ordem (1, 2, 3...)" 
+      type="number"
+      hint="Menor número aparece primeiro"
+    ></v-text-field>
+  </v-col>
               <v-col cols="12" sm="6"><v-text-field v-model="editedItem.cargo" label="Cargo (Ex: Instrutor)"></v-text-field></v-col>
               <v-col cols="12"><v-text-field v-model="editedItem.urlImagem" label="URL da Foto" hint="Link da foto do instrutor"></v-text-field></v-col>
               <v-col cols="12">
@@ -71,8 +79,8 @@ export default {
       { text: 'Ações', value: 'actions', sortable: false },
     ],
     equipe: [], editedIndex: -1,
-    editedItem: { id: null, nome: '', cargo: '', descricao: '', urlImagem: '' },
-    defaultItem: { id: null, nome: '', cargo: '', descricao: '', urlImagem: '' },
+    editedItem: { id: null, nome: '', cargo: '', descricao: '', urlImagem: '', ordem: 99 },
+    defaultItem: { id: null, nome: '', cargo: '', descricao: '', urlImagem: '', ordem: 99 },
   }),
   computed: { formTitle() { return this.editedIndex === -1 ? 'Novo Membro' : 'Editar Membro'; } },
   created() { this.initialize(); },
@@ -100,7 +108,8 @@ export default {
           nome: this.editedItem.nome,
           cargo: this.editedItem.cargo,
           descricao: this.editedItem.descricao,
-          urlImagem: this.editedItem.urlImagem
+          urlImagem: this.editedItem.urlImagem,
+          ordem: this.editedItem.ordem
         };
 
         if (this.editedIndex > -1) {

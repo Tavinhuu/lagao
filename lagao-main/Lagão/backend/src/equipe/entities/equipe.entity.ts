@@ -6,6 +6,9 @@ export class Equipe {
     @PrimaryGeneratedColumn()
     id: number;
 
+    @Column({name: 'ordem', type: 'int', default: 99}) 
+    ordem: number;
+
     @Column({name: 'nome', type: 'varchar'})
     nome: string;
 
