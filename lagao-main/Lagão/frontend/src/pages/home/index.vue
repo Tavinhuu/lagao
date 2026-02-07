@@ -60,9 +60,6 @@
     <section class="section-spacing" style="background-color: #050505; border-top: 1px solid #222;">
       <v-container>
         <div class="text-center mb-10">
-          <h2 class="text-overline red--text font-weight-bold mb-2 tracking-widest">
-            EXPERIÊNCIA IMERSIVA
-          </h2>
           <h1 class="text-h4 text-md-h3 font-weight-black white--text text-uppercase">
             Veja em Vídeo
           </h1>
@@ -304,10 +301,21 @@
       </v-container>
     </section>
 
-    <section class="section-spacing" style="background-color: #050505; border-top: 1px solid #222;">
+   <section class="section-spacing" style="background-color: #050505; border-top: 1px solid #222;">
       <v-container>
-        <v-row justify="center">
-          <v-col cols="12" md="8" lg="6">
+        <v-row justify="center" align="center">
+          
+          <v-col cols="10" md="5" class="d-none d-md-block">
+            <v-img
+              src="https://i.ibb.co/9Hb6QpnD/Whats-App-Image-2026-02-07-at-10-48-18.png"
+              class="mx-auto"
+              max-height="900"
+              contain
+              style="opacity: 1"
+            ></v-img>
+          </v-col>
+
+          <v-col cols="12" md="6" lg="5">
             <div class="text-center mb-10">
               <h2 class="text-overline red--text font-weight-bold mb-2 tracking-widest">
                 FALE CONOSCO
@@ -343,6 +351,16 @@
                 dark
                 color="red"
                 background-color="#121212"
+              ></v-text-field>
+
+              <v-text-field
+                v-model="form.telefone"
+                label="Seu WhatsApp / Telefone (Opcional)"
+                outlined
+                dark
+                color="red"
+                background-color="#121212"
+                type="tel"
               ></v-text-field>
 
               <v-textarea
@@ -382,7 +400,6 @@
         </template>
       </v-snackbar>
     </section>
-
   </div>
 
 </template>
@@ -433,6 +450,7 @@ export default {
       form: {
         nome: '',
         email: '',
+        telefone: '',
         mensagem: ''
       },
       snackbar: {
@@ -456,7 +474,14 @@ export default {
         // 3. Envia os dados
         await axios.post(urlFormspree, {
           email: this.form.email,
-          message: `Nome: ${this.form.nome}\nMensagem: ${this.form.mensagem}`
+          message: `
+            Nome: ${this.form.nome}
+            Email: ${this.form.email}
+            Telefone: ${this.form.telefone || 'Não informado'}
+            
+            Mensagem:
+            ${this.form.mensagem}
+          `
         });
 
         // 4. Mostra sucesso
