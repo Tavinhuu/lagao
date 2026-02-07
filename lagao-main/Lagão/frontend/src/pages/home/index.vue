@@ -57,6 +57,50 @@
       </v-container>
     </section>
 
+    <section class="section-spacing" style="background-color: #050505; border-top: 1px solid #222;">
+      <v-container>
+        <div class="text-center mb-10">
+          <h2 class="text-overline red--text font-weight-bold mb-2 tracking-widest">
+            EXPERIÊNCIA IMERSIVA
+          </h2>
+          <h1 class="text-h4 text-md-h3 font-weight-black white--text text-uppercase">
+            Veja em Vídeo
+          </h1>
+          <div class="mx-auto gradient-line mt-4"></div>
+        </div>
+
+        <v-slide-group
+          class="pa-4"
+          show-arrows
+          dark
+          center-active
+        >
+          <v-slide-item
+            v-for="(video, index) in videosShorts"
+            :key="index"
+          >
+            <v-card
+              class="ma-3 rounded-xl overflow-hidden elevation-10 video-card"
+              height="500"
+              width="280"
+              color="#000"
+            >
+              <iframe
+                width="100%"
+                height="100%"
+                :src="`https://www.youtube.com/embed/${video}?rel=0`"
+                title="YouTube video player"
+                frameborder="0"
+                allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen
+                style="border-radius: 20px;"
+              ></iframe>
+            </v-card>
+          </v-slide-item>
+        </v-slide-group>
+      </v-container>
+    </section>
+
     <section class="section-spacing" style="background-color: #121212;">
       <v-container>
         <div class="text-center mb-10 mb-md-16">
@@ -374,7 +418,16 @@ export default {
       depoimentos: [],
       viagemAtual: 0,
       depoimentoAtual: 0,
-
+      videosShorts: [
+        '6Ig-3W5aSZM',
+        'IX7AxK0lABg',
+        'U5eXkAJz9cE',
+        'BALPtn3eZdE',
+        '8tBpNbmTWxM',
+        'PuWkzzwUgiM',
+        'qxRv4mQOPFk',
+        'NA9N7IZFFbQ'
+      ],
       enviando: false,
       formValido: true,
       form: {
@@ -537,6 +590,16 @@ export default {
   transform: translateY(-12px);
   border-color: #D32F2F !important;
   box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5) !important;
+}
+
+.video-card {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.video-card:hover {
+  transform: translateY(-5px);
+  border-color: #D32F2F;
 }
 
 .course-card.on-hover .group-hover-underline {
