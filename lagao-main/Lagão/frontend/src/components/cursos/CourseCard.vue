@@ -30,18 +30,6 @@
           {{ curso.nome }}
         </v-card-title>
 
-        <div v-if="curso.descricaoTeorico" class="mb-3">
-          <v-chip 
-            small 
-            outlined 
-            color="#D32F2F" 
-            class="font-weight-bold"
-            style="border-color: #D32F2F;"
-          >
-            {{ curso.descricaoTeorico }}
-          </v-chip>
-        </div>
-
         <v-card-text class="pa-0 grey--text text--lighten-1 body-2 flex-grow-1 line-clamp-3 mb-4">
           {{ curso.descricao }}
         </v-card-text>

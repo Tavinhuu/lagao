@@ -1,6 +1,6 @@
 <template>
   <div class="courses-wrapper">
-    <v-container class="py-10 py-md-16">
+    <v-container class="py-10 py-md-16" id="inicio-cursos">
       
       <div v-if="!cursoSelecionado">
         
@@ -166,7 +166,13 @@ export default {
     },
     mostrarDetalhes(curso) {
       this.cursoSelecionado = curso;
-      this.$vuetify.goTo(0);
+      this.$nextTick(() => {
+        this.$vuetify.goTo('#inicio-cursos', {
+          duration: 600,
+          offset: 10,  // Deixa um espacinho do topo
+          easing: 'easeInOutCubic',
+        });
+      });
     }
   },
   mounted() {
