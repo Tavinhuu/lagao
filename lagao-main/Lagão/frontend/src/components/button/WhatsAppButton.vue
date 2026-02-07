@@ -24,8 +24,8 @@ export default {
 <style>
 .whatsapp-button {
   position: fixed;
-  top: 30vh;
-  right: 40px;
+  bottom: 30px; 
+  right: 30px; 
   width: 60px;
   height: 60px;
   background-color: #25d366;
@@ -33,10 +33,10 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
   cursor: pointer;
   z-index: 1000;
-  transform: translateY(-50%);
+  transition: transform 0.3s ease;
 }
 
 .whatsapp-button:hover {

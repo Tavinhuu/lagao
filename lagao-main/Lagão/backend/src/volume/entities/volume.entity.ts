@@ -8,6 +8,7 @@ import { Loja } from "src/loja/entities/loja.entity";
 import { Parceiro } from "src/parceiros/entities/parceiro.entity";
 
 import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { HomePage } from "src/home-page/entities/home-page.entity";
 
 @Entity({name: 'volume'})
 export class Volume {
@@ -77,4 +78,10 @@ export class Volume {
     })
     @JoinColumn({ name: 'parceiro_id' })
     public parceiro: Parceiro | null;
+    
+    @OneToOne(() => HomePage, (homePage) => homePage.volume, {
+        nullable: true,
+        onDelete: 'CASCADE'
+    })
+    public homePage: HomePage | null;
 }

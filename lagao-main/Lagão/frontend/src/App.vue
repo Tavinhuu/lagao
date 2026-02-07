@@ -10,6 +10,7 @@
       </v-fade-transition>
     </v-main>
     <Rodape />
+    <WhatsAppButton />
   </v-app>
 </template>
 
@@ -17,10 +18,11 @@
 import Cabecalho from './components/layout/cabecalho.vue';
 import Rodape from './components/layout/rodape.vue';
 import CarouselBanner from './components/CarouselBanner.vue';
+import WhatsAppButton from './components/button/WhatsAppButton.vue';
 
 export default {
   name: 'App',
-  components: { Cabecalho, Rodape, CarouselBanner }
+  components: { Cabecalho, Rodape, CarouselBanner, WhatsAppButton }
 }
 </script>
 

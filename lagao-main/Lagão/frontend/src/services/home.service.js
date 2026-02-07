@@ -1,14 +1,17 @@
-import axiosApi from "@/plugins/axios";
+import http from '@/plugins/axios'
 
-const homePageService = {
-    async getHomePage() {
-        try {
-            const response = await axiosApi.get('/home-page')
-            return response.data
-        } catch (error) {
-            console.error(error)
-        }
+class HomePageService {
+    getHomePage() {
+        return http.get('/home-page').then(response => response.data);
+    }
+
+    create(data) {
+        return http.post('/home-page', data);
+    }
+
+    delete(id) {
+        return http.delete(`/home-page/${id}`);
     }
 }
 
-export default homePageService
+export default new HomePageService();

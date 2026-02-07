@@ -22,7 +22,7 @@
           />
         </router-link>
 
-        <v-spacer></v-spacer>
+        <v-spacer class="d-none d-md-flex"></v-spacer>
 
         <div class="d-none d-md-flex align-center">
           <v-btn
@@ -36,24 +36,28 @@
           >
             {{ item.title }}
           </v-btn>
-
-          <v-btn
-            rounded
-            color="#D32F2F"
-            class="ml-4 font-weight-bold elevation-0"
-            href="https://wa.me/5561998385830"
-            target="_blank"
-            small
-          >
-            Agendar
-          </v-btn>
         </div>
 
-        <v-app-bar-nav-icon 
-          class="d-md-none ml-2" 
-          @click="drawer = !drawer"
-          large
-        ></v-app-bar-nav-icon>
+        <v-spacer></v-spacer>
+
+        <div class="d-flex align-center">
+          
+
+          <v-img
+            src="https://i.ibb.co/CK2mvcQD/SDI-Letter-White-RGB-v0824-01.jpg"
+            max-height="50"
+            max-width="100"
+            contain
+            class="d-none d-md-flex"
+            alt="Logo SDI"
+          ></v-img>
+
+          <v-app-bar-nav-icon 
+            class="d-md-none ml-2" 
+            @click="drawer = !drawer"
+            large
+          ></v-app-bar-nav-icon>
+        </div>
 
       </v-container>
     </v-app-bar>
@@ -101,6 +105,10 @@
             <v-icon left>mdi-whatsapp</v-icon>
             Agendar Agora
           </v-btn>
+          
+          <div class="d-flex justify-center mt-6">
+             <img src="https://i.ibb.co/CK2mvcQD/SDI-Letter-White-RGB-v0824-01.jpg" height="40" style="opacity: 0.7;" />
+          </div>
         </div>
       </template>
     </v-navigation-drawer>
