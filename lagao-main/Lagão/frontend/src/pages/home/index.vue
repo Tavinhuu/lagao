@@ -5,10 +5,10 @@
       <v-container>
         <div class="text-center mb-10">
           <h2 class="text-overline red--text font-weight-bold mb-2 tracking-widest">
-            DEPOIMENTOS
+            O QUE DIZEM SOBRE NÓS
           </h2>
           <h1 class="text-h4 text-md-h3 font-weight-black white--text text-uppercase">
-            O que dizem sobre nós
+            Fala Mergulhador!
           </h1>
           <div class="mx-auto gradient-line mt-4"></div>
         </div>
@@ -69,7 +69,7 @@
           <div class="mx-auto gradient-line"></div>
         </div>
 
-        <v-row v-if="!loading">
+        <v-row v-if="!loading" justify="center">
           <v-col 
             v-for="(categoria, index) in categorias" 
             :key="index" 
@@ -187,7 +187,7 @@
           <div class="mx-auto gradient-line mt-4"></div>
         </div>
 
-        <v-row v-if="expedicoes.length">
+        <v-row v-if="expedicoes.length" justify="center">
           <v-col 
             v-for="exp in expedicoes" :key="exp.id"
             cols="12" md="4"
@@ -260,6 +260,85 @@
       </v-container>
     </section>
 
+    <section class="section-spacing" style="background-color: #050505; border-top: 1px solid #222;">
+      <v-container>
+        <v-row justify="center">
+          <v-col cols="12" md="8" lg="6">
+            <div class="text-center mb-10">
+              <h2 class="text-overline red--text font-weight-bold mb-2 tracking-widest">
+                FALE CONOSCO
+              </h2>
+              <h1 class="text-h4 font-weight-black white--text text-uppercase">
+                Entre em contato
+              </h1>
+              <div class="mx-auto gradient-line mt-4"></div>
+              <p class="grey--text mt-4">
+                Preencha o formulário abaixo e entraremos em contato.
+              </p>
+            </div>
+
+            <v-form ref="form" v-model="formValido" lazy-validation>
+              <v-text-field
+                v-model="form.nome"
+                :rules="[v => !!v || 'Nome é obrigatório']"
+                label="Seu Nome"
+                outlined
+                dark
+                color="red"
+                background-color="#121212"
+              ></v-text-field>
+
+              <v-text-field
+                v-model="form.email"
+                :rules="[
+                  v => !!v || 'E-mail é obrigatório',
+                  v => /.+@.+\..+/.test(v) || 'E-mail inválido'
+                ]"
+                label="Seu E-mail"
+                outlined
+                dark
+                color="red"
+                background-color="#121212"
+              ></v-text-field>
+
+              <v-textarea
+                v-model="form.mensagem"
+                :rules="[v => !!v || 'Mensagem é obrigatória']"
+                label="Sua Mensagem"
+                outlined
+                dark
+                color="red"
+                background-color="#121212"
+                rows="4"
+              ></v-textarea>
+
+              <div class="text-center mt-4">
+                <v-btn
+                  :loading="enviando"
+                  :disabled="!formValido"
+                  color="red darken-1"
+                  x-large
+                  block
+                  class="white--text font-weight-bold"
+                  @click="enviarContato"
+                >
+                  ENVIAR MENSAGEM
+                  <v-icon right>mdi-send</v-icon>
+                </v-btn>
+              </div>
+            </v-form>
+          </v-col>
+        </v-row>
+      </v-container>
+      
+      <v-snackbar v-model="snackbar.show" :color="snackbar.color" top timeout="4000">
+        {{ snackbar.text }}
+        <template v-slot:action="{ attrs }">
+          <v-btn text v-bind="attrs" @click="snackbar.show = false">Fechar</v-btn>
+        </template>
+      </v-snackbar>
+    </section>
+
   </div>
 
 </template>
@@ -277,6 +356,8 @@ import expedicoesService from '@/services/expedicoes.service';
 import categoriaCursosService from '@/services/categoriacurso.service';
 import { mutations } from "@/store";
 
+import axios from 'axios';
+
 export default {
   name: "IndexHome",
   components: {
@@ -292,10 +373,60 @@ export default {
       categorias: [],
       depoimentos: [],
       viagemAtual: 0,
-      depoimentoAtual: 0
+      depoimentoAtual: 0,
+
+      enviando: false,
+      formValido: true,
+      form: {
+        nome: '',
+        email: '',
+        mensagem: ''
+      },
+      snackbar: {
+        show: false,
+        text: '',
+        color: ''
+      }
     };
   },
   methods: {
+    async enviarContato() {
+      // 1. Valida se preencheu tudo
+      if (!this.$refs.form.validate()) return;
+
+      this.enviando = true;
+
+      try {
+        // 2. COLOQUE AQUI O SEU LINK DO FORMSPREE (Aquele do Passo 1)
+        const urlFormspree = 'https://formspree.io/f/xvzboqpv'; 
+        
+        // 3. Envia os dados
+        await axios.post(urlFormspree, {
+          email: this.form.email,
+          message: `Nome: ${this.form.nome}\nMensagem: ${this.form.mensagem}`
+        });
+
+        // 4. Mostra sucesso
+        this.snackbar = {
+          show: true,
+          text: 'Mensagem enviada! Em breve entraremos em contato.',
+          color: 'success'
+        };
+        
+        // 5. Limpa o formulário
+        this.$refs.form.reset();
+
+      } catch (error) {
+        console.error(error);
+        this.snackbar = {
+          show: true,
+          text: 'Ocorreu um erro ao enviar. Tente novamente.',
+          color: 'error'
+        };
+      } finally {
+        this.enviando = false;
+      }
+    },
     abrirWhatsapp(expedicao) {
       const numero = "55998385830";
 
