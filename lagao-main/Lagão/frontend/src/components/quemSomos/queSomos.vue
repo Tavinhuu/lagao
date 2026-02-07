@@ -3,23 +3,68 @@
     
     <v-container>
       <v-row justify="center">
-        <v-col cols="12" md="10" lg="8">
+        <v-col cols="12" md="10" lg="10">
           
           <div class="text-center pt-10 mb-10">
             <h2 class="text-overline red--text font-weight-bold mb-2 tracking-widest">
               NOSSA HISTÓRIA
             </h2>
             <h1 class="text-h4 text-md-h2 font-weight-black white--text text-uppercase mb-6">
-              {{ dados.titulo || 'Quem Somos' }}
+              Quem Somos
             </h1>
             <div class="mx-auto gradient-line"></div>
           </div>
 
-          <div 
-            class="grey--text text--lighten-1 text-body-1 text-justify mb-10" 
-            style="line-height: 1.8;"
-            v-html="dados.texto"
-          ></div>
+          <div class="text-center px-4 mb-16">
+             <v-icon large color="red" class="mb-4">mdi-format-quote-open</v-icon>
+             <h3 class="text-h5 text-md-h4 font-weight-regular font-italic grey--text text--lighten-1" style="line-height: 1.6;">
+              Uma pessoa só deve ser certificada mergulhadora quando quem a treinou confia, de verdade, na capacidade dela. Seja para mergulhar em dupla ou, nos níveis profissionais, para ensinar mergulho a quem ama.
+             </h3>
+             <v-icon large color="red" class="mt-4">mdi-format-quote-close</v-icon>
+          </div>
+
+          <v-row class="mb-10">
+            <v-col cols="12" md="5" class="d-flex">
+              <v-card class="rounded-xl pa-8 flex-grow-1 elevation-10" color="#1a1a1a" style="border: 1px solid rgba(255,255,255,0.05);">
+                <div class="d-flex align-center mb-6">
+                   <h2 class="text-h5 font-weight-bold white--text text-uppercase">Nosso Propósito</h2>
+                </div>
+                <p class="grey--text text--lighten-1 text-body-1" style="line-height: 1.8;">
+                  Transformar a vida das pessoas por meio da conexão consigo mesmas, com a natureza e com a aventura — 
+                  <span class="red--text font-weight-bold">sempre com a segurança em primeiro lugar.</span>
+                </p>
+              </v-card>
+            </v-col>
+
+            <v-col cols="12" md="7" class="d-flex">
+              <v-card class="rounded-xl pa-8 flex-grow-1 elevation-10" color="#1a1a1a" style="border: 1px solid rgba(255,255,255,0.05);">
+                <div class="d-flex align-center mb-6">
+                   <h2 class="text-h5 font-weight-bold white--text text-uppercase">Nossos Valores</h2>
+                </div>
+                
+                <ul class="custom-list pl-0">
+                  <li class="d-flex align-start mb-4">
+                    <v-icon color="red" small class="mt-1 mr-3">mdi-check-circle</v-icon>
+                    <span class="grey--text text--lighten-1 text-body-1">
+                      <strong>Antes de instrutores, somos mergulhadores.</strong> Você aprende a partir de um repertório de situações reais, com foco em segurança, aplicação prática e que geram decisões conscientes debaixo d’água.
+                    </span>
+                  </li>
+                  <li class="d-flex align-start mb-4">
+                    <v-icon color="red" small class="mt-1 mr-3">mdi-check-circle</v-icon>
+                    <span class="grey--text text--lighten-1 text-body-1">
+                      <strong>Certificação não é comprada, é conquistada!</strong> Cada curso é o início de uma jornada, desenhada para construir habilidade, autonomia e auto-responsabilidade, passo a passo.
+                    </span>
+                  </li>
+                  <li class="d-flex align-start">
+                    <v-icon color="red" small class="mt-1 mr-3">mdi-check-circle</v-icon>
+                    <span class="grey--text text--lighten-1 text-body-1">
+                      Cada mergulho, desde o primeiro na piscina, precisa ser <strong>especial, memorável e transformador.</strong>
+                    </span>
+                  </li>
+                </ul>
+              </v-card>
+            </v-col>
+          </v-row>
 
         </v-col>
       </v-row>
@@ -29,7 +74,7 @@
       <div class="bg-pattern"></div>
       
       <v-container class="position-relative z-index-2">
-        <div class="text-center mb-16">
+        <div class="text-center mb-10">
           <v-icon size="40" color="#D32F2F" class="mb-4">mdi-account-group</v-icon>
           <h2 class="text-h4 text-md-h3 font-weight-black white--text text-uppercase">
             Nossa Equipe
@@ -41,20 +86,48 @@
            <v-progress-circular indeterminate color="#D32F2F" size="60"></v-progress-circular>
         </div>
 
-        <v-row v-else justify="center">
-           <v-col 
-             v-for="(membro, index) in equipe" 
-             :key="membro.id || index" 
-             cols="12" 
-             class="mb-6"
-           >
-              <CardInstrutor :instrutor="membro" />
-           </v-col>
-        </v-row>
-        
-        <p v-if="!loading && equipe.length === 0" class="text-center grey--text">
-           Nenhum membro da equipe encontrado. Adicione pelo painel Admin!
-        </p>
+        <div v-else>
+          <div v-if="instrutores.length" class="mb-16">
+            <div class="text-center mb-8">
+               <v-divider class="mx-auto mt-2 red darken-4" style="width: 40px; border-width: 2px;"></v-divider>
+            </div>
+
+            <v-row justify="center">
+               <v-col 
+                 v-for="(membro, index) in instrutores" 
+                 :key="'instrutor-' + index" 
+                 cols="12" 
+                 class="mb-6"
+               >
+                  <CardInstrutor :instrutor="membro" />
+               </v-col>
+            </v-row>
+          </div>
+
+          <div v-if="staff.length">
+            <div class="text-center mb-8">
+               <h3 class="text-h5 red--text text--darken-1 font-weight-bold text-uppercase tracking-widest">
+                 Staff & Apoio
+               </h3>
+               <v-divider class="mx-auto mt-2 red darken-4" style="width: 40px; border-width: 2px;"></v-divider>
+            </div>
+
+            <v-row justify="center">
+               <v-col 
+                 v-for="(membro, index) in staff" 
+                 :key="'staff-' + index" 
+                 cols="12" md="6"
+                 class="mb-6"
+               >
+                  <CardInstrutor :instrutor="membro" />
+               </v-col>
+            </v-row>
+          </div>
+          
+          <p v-if="equipe.length === 0" class="text-center grey--text">
+             Nenhum membro da equipe encontrado. Adicione pelo painel Admin!
+          </p>
+        </div>
 
       </v-container>
     </div>
@@ -105,11 +178,11 @@
                   cover
                   @click="abrirGaleria(i)"
                 >
-                   <template v-slot:placeholder>
-                      <v-row class="fill-height ma-0" align="center" justify="center">
-                        <v-progress-circular indeterminate color="grey lighten-5"></v-progress-circular>
-                      </v-row>
-                   </template>
+                    <template v-slot:placeholder>
+                       <v-row class="fill-height ma-0" align="center" justify="center">
+                         <v-progress-circular indeterminate color="grey lighten-5"></v-progress-circular>
+                       </v-row>
+                    </template>
                 </v-img>
               </v-col>
             </v-row>
@@ -159,9 +232,9 @@
                   :src="parceiro.logo && parceiro.logo[0] ? parceiro.logo[0].url : ''" 
                   alt="Logo"
                 >
-                   <template v-slot:placeholder>
-                      <v-icon large color="grey">mdi-handshake</v-icon>
-                   </template>
+                    <template v-slot:placeholder>
+                       <v-icon large color="grey">mdi-handshake</v-icon>
+                    </template>
                 </v-img>
               </v-avatar>
               
@@ -194,9 +267,7 @@
 </template>
 
 <script>
-// Importa o Mock antigo para o texto
-import { quemSomos } from "@/mock/quemsomos";
-// Importa Services
+// Services
 import EquipeService from '@/services/equipe.service';
 import LojaService from '@/services/loja.service'; 
 import ParceirosService from '@/services/parceiros.service';
@@ -209,15 +280,40 @@ export default {
   data() {
     return {
       loading: true,
-      dados: quemSomos, // Texto estático (História)
-      equipe: [],       // Dados dinâmicos (Pessoas)
+      equipe: [],        
       parceiros: [],
-      
-      // Dados da Loja
       loja: { endereco: '', linkMapa: '', galeria: [] },
       showGaleria: false,
       indexGaleria: 0
     };
+  },
+  computed: {
+    instrutores() {
+      return this.equipe.filter(m => {
+         const cargo = (m.cargo || '').toLowerCase();
+         return cargo.includes('instrutor') || 
+                cargo.includes('instrutora') || 
+                cargo.includes('director') || 
+                cargo.includes('marketing') || 
+                cargo.includes('head') ||
+                cargo.includes('vendas');
+      });
+    },
+
+    staff() {
+      return this.equipe.filter(m => {
+         const cargo = (m.cargo || '').toLowerCase();
+
+         const ehPrincipal = cargo.includes('instrutor') || 
+                             cargo.includes('instrutora') || 
+                             cargo.includes('director') || 
+                             cargo.includes('marketing') || 
+                             cargo.includes('head') ||
+                             cargo.includes('vendas');
+                             
+         return !ehPrincipal;
+      });
+    }
   },
   methods: {
     abrirGaleria(index) {
@@ -228,7 +324,6 @@ export default {
   async mounted() {
     this.loading = true;
     try {
-      // Usando Promise.all para carregar tudo junto
       const [equipeRes, lojaRes, parceirosRes] = await Promise.all([
          EquipeService.getAll().catch(err => { console.error("Erro equipe", err); return []; }),
          LojaService.get().catch(err => { console.error("Erro loja", err); return { data: {} }; }),
@@ -280,25 +375,23 @@ export default {
   z-index: 2;
 }
 
-/* Estilos para o HTML injetado (v-html) */
-::v-deep .quem-somos-wrapper h3 {
-  color: white;
-  font-size: 1.5rem;
-  margin-bottom: 1rem;
-  font-weight: 700;
+.icon-box {
+  background: rgba(211, 47, 47, 0.1);
+  padding: 12px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-::v-deep .quem-somos-wrapper p {
-  margin-bottom: 1.5rem;
+/* Lista Customizada */
+.custom-list {
+  list-style: none;
 }
 
-::v-deep .quem-somos-wrapper strong {
-  color: #D32F2F;
-}
-
-/* --- ESTILOS NOVOS DA LOJA --- */
+/* --- ESTILOS DA LOJA --- */
 .map-container iframe {
-  filter: invert(90%) hue-rotate(180deg); /* Deixa o mapa com estilo "Dark Mode" */
+  filter: invert(90%) hue-rotate(180deg); 
   display: block;
 }
 
