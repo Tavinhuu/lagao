@@ -126,6 +126,7 @@ export default {
       { title: "a LAGÃO", link: "/quemsomos#inicio-conteudo" },
       { title: "Cursos", link: "/cursos#inicio-conteudo" },
       { title: "Viagens", link: "/viagens#inicio-conteudo" },
+      { title: "Parceiros", link: "/parceiros" },
       { title: "Agenda", link: "/agenda#inicio-conteudo" }
     ]
   }),
@@ -145,7 +146,9 @@ export default {
         'Quem somos': 'mdi-account-group-outline',
         'Cursos': 'mdi-school-outline',
         'Viagens': 'mdi-airplane',
+        'Parceiros': 'mdi-handshake',
         'Agenda': 'mdi-calendar-clock'
+        
       };
       return icons[title] || 'mdi-circle-small';
     }

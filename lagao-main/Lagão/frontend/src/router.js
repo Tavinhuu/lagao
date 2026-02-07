@@ -10,6 +10,7 @@ import FaleConosco from './pages/faleConosco/index.vue'
 import Loja from './pages/loja/index.vue'
 import Midia from './pages/midia/index.vue'
 import Viagens from './pages/viagens/index.vue'
+import Parceiros from './pages/parceiros/index.vue'
 import NotFound from './components/layout/notFound.vue'
 
 // Páginas Admin
@@ -55,6 +56,7 @@ const routes = [
   { path: '/faleconosco', component: FaleConosco },
   { path: '/loja', component: Loja },
   { path: '/midia', component: Midia },
+  { path: '/parceiros', component: Parceiros },
   { path: '/viagens', component: Viagens },
   
   // Rota 404 (Deve ser sempre a última)
