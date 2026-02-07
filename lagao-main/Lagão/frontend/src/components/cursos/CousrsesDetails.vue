@@ -26,137 +26,121 @@
         </v-col>
       </v-row>
 
-      <v-row justify="center" class="mb-10">
-        <v-col cols="12" md="10">
-          <v-tabs 
-            v-model="tab" 
-            background-color="transparent"
-            dark
-            centered
-            show-arrows
-            class="custom-tabs"
-          >
-            <v-tab 
-              v-for="(categoria, index) in todasCategorias" 
-              :key="index"
-              class="rounded-pill mx-1 px-6 font-weight-bold letter-spacing-1 transition-swing"
-              active-class="active-tab-glow"
-            >
-              {{ categoria.nome }}
-            </v-tab>
-          </v-tabs>
-        </v-col>
-      </v-row>
-
       <v-fade-transition mode="out-in">
-        
-        <div v-if="categoriaCurso" :key="tab" class="content-area">
-          <v-row>
-            <v-col cols="12" md="5" class="d-flex flex-column">
-              <v-card 
-                class="rounded-xl overflow-hidden elevation-10 flex-grow-1" 
-                color="#1E1E1E"
-                style="border: 1px solid rgba(255,255,255,0.05);"
-              >
-                <v-carousel
-                  v-if="imagensCategoriaAtual && imagensCategoriaAtual.length > 0"
-                  height="400"
-                  hide-delimiters
-                  cycle
-                  :show-arrows="false"
-                  class="fill-height"
-                >
-                  <v-carousel-item
-                    v-for="(imagem, i) in imagensCategoriaAtual"
-                    :key="i"
-                    :src="imagem"
-                    cover
-                  ></v-carousel-item>
-                </v-carousel>
-
+        <div class="content-area">
+          
+          <v-row class="mb-16">
+            <v-col cols="12" md="6">
+              <v-card class="rounded-xl overflow-hidden elevation-10" color="#1E1E1E">
                 <v-img
-                  v-else
-                  :src="categoriaCurso.volume?.url || '@/assets/logo.png'" 
-                  height="100%"
-                  min-height="400px"
+                  :src="getImagemPrincipal(curso.volume)" 
+                  height="400"
                   cover
                   class="main-image"
                 >
-                  <template v-slot:placeholder>
-                    <v-row class="fill-height ma-0" align="center" justify="center" style="background: #1E1E1E;">
-                      <v-progress-circular indeterminate color="#D32F2F"></v-progress-circular>
-                    </v-row>
-                  </template>
                   <div class="image-overlay"></div>
                 </v-img>
               </v-card>
             </v-col>
 
-            <v-col cols="12" md="7">
-              <v-card 
-                class="rounded-xl pa-6 pa-md-8 fill-height d-flex flex-column" 
-                color="#1a1a1a" 
-                elevation="0"
-                style="border: 1px solid rgba(255,255,255,0.05);"
-              >
-                <div class="mb-6">
-                  <h2 class="text-h4 font-weight-bold white--text mb-2">
-                    {{ categoriaCurso.titulo || curso.nome }}
-                  </h2>
-                  <p class="red--text text--accent-2 text-subtitle-1 font-weight-medium">
-                    {{ curso.descricaoTeorico || 'Módulo Teórico & Prático' }}
-                  </p>
+            <v-col cols="12" md="6" class="d-flex flex-column justify-center">
+              <div>
+                <h2 class="text-h4 font-weight-bold white--text mb-4">
+                  Sobre o Curso
+                </h2>
+                <div class="grey--text text--lighten-1 text-body-1 line-height-relaxed">
+                  {{ curso.descricao }}
                 </div>
+              </div>
+              
+              <div class="mt-8">
+                <v-btn
+                  x-large
+                  rounded
+                  color="#D32F2F"
+                  class="white--text font-weight-bold elevation-10 btn-glow px-8"
+                  :href="whatsappLink"
+                  target="_blank"
+                >
+                  <v-icon left>mdi-whatsapp</v-icon>
+                  Agendar Agora
+                </v-btn>
+              </div>
+            </v-col>
+          </v-row>
 
-                <div class="grey--text text--lighten-1 text-body-1 mb-8 scrollable-text flex-grow-1">
-                  <p>{{ categoriaCurso.descricao }}</p>
-                  <p v-if="categoriaCurso.volume?.descricao" class="mt-4">
-                    {{ categoriaCurso.volume.descricao }}
-                  </p>
-                </div>
+          <v-row v-if="temDetalhesExtras">
+            <v-col cols="12">
+              <h3 class="text-h4 font-weight-bold white--text mb-8 text-center">
+                Estrutura do Aprendizado
+              </h3>
+            </v-col>
 
-                <div class="mt-auto pt-4">
-                  <v-btn
-                    x-large
-                    block
-                    rounded
-                    color="#D32F2F"
-                    class="white--text font-weight-bold elevation-10 btn-glow"
-                    :href="whatsappLink"
-                    target="_blank"
-                  >
-                    <v-icon left>mdi-whatsapp</v-icon>
-                    Agendar Agora
-                  </v-btn>
+            <v-col cols="12" md="4" v-if="curso.descricaoTeorico">
+              <v-card class="fill-height rounded-xl pa-6 module-card d-flex flex-column" color="#1a1a1a">
+                <div class="icon-circle mb-4 bg-red-gradient">
+                  <v-icon large color="white">mdi-book-open-page-variant</v-icon>
                 </div>
+                <h4 class="text-h5 font-weight-bold white--text mb-3">Teoria</h4>
+                
+                <v-img 
+                  v-if="temImagem(curso.volumeTeorico)"
+                  :src="getImagem(curso.volumeTeorico)"
+                  height="150"
+                  class="rounded-lg mb-4"
+                  cover
+                ></v-img>
+
+                <p class="grey--text text--lighten-1 body-2 flex-grow-1">
+                  {{ curso.descricaoTeorico }}
+                </p>
+              </v-card>
+            </v-col>
+
+            <v-col cols="12" md="4" v-if="curso.descricaoAguasConfinadas">
+              <v-card class="fill-height rounded-xl pa-6 module-card d-flex flex-column" color="#1a1a1a">
+                <div class="icon-circle mb-4 bg-blue-gradient">
+                  <v-icon large color="white">mdi-pool</v-icon>
+                </div>
+                <h4 class="text-h5 font-weight-bold white--text mb-3">Águas Confinadas</h4>
+
+                <v-img 
+                  v-if="temImagem(curso.volumeAguasConfinadas)"
+                  :src="getImagem(curso.volumeAguasConfinadas)"
+                  height="150"
+                  class="rounded-lg mb-4"
+                  cover
+                ></v-img>
+
+                <p class="grey--text text--lighten-1 body-2 flex-grow-1">
+                  {{ curso.descricaoAguasConfinadas }}
+                </p>
+              </v-card>
+            </v-col>
+
+            <v-col cols="12" md="4" v-if="curso.descricaoAguasAbertas">
+              <v-card class="fill-height rounded-xl pa-6 module-card d-flex flex-column" color="#1a1a1a">
+                <div class="icon-circle mb-4 bg-green-gradient">
+                  <v-icon large color="white">mdi-waves</v-icon>
+                </div>
+                <h4 class="text-h5 font-weight-bold white--text mb-3">Águas Abertas</h4>
+
+                <v-img 
+                  v-if="temImagem(curso.volumeAguasAbertas)"
+                  :src="getImagem(curso.volumeAguasAbertas)"
+                  height="150"
+                  class="rounded-lg mb-4"
+                  cover
+                ></v-img>
+
+                <p class="grey--text text--lighten-1 body-2 flex-grow-1">
+                  {{ curso.descricaoAguasAbertas }}
+                </p>
               </v-card>
             </v-col>
           </v-row>
-        </div>
 
-        <div v-else :key="'empty-'+tab" class="text-center py-16">
-          <v-card 
-            class="rounded-xl pa-10 mx-auto" 
-            max-width="600" 
-            color="#1a1a1a" 
-            elevation="0"
-            style="border: 1px dashed rgba(255,255,255,0.1);"
-          >
-            <v-icon size="60" color="grey darken-3" class="mb-4">mdi-flask-empty-outline</v-icon>
-            <h3 class="text-h5 white--text font-weight-bold mb-2">Conteúdo em Breve</h3>
-            <p class="grey--text">
-              Ainda não temos informações detalhadas para este curso na categoria selecionada.
-            </p>
-            <v-btn 
-              text 
-              color="#D32F2F" 
-              @click="tab = 0"
-            >
-              Voltar para o início
-            </v-btn>
-          </v-card>
         </div>
-
       </v-fade-transition>
 
     </v-container>
@@ -170,52 +154,46 @@ export default {
     curso: {
       type: Object,
       required: true
-    },
-    todasCategorias: {
-      type: Array,
-      required: true
     }
   },
-  data() {
-    return {
-      tab: 0
-    };
-  },
   computed: {
-    categoriaSelecionada() {
-      return this.todasCategorias?.[this.tab] || {};
-    },
-    // Encontra os dados específicos desta categoria DENTRO do objeto curso
-    categoriaCurso() {
-      if (!this.curso.categorias) return null;
-      return this.curso.categorias.find(
-        (cat) => cat.categoriaId === this.categoriaSelecionada.id
+    // Verifica se existe pelo menos um dos campos extras preenchidos
+    temDetalhesExtras() {
+      return (
+        this.curso.descricaoTeorico || 
+        this.curso.descricaoAguasConfinadas || 
+        this.curso.descricaoAguasAbertas
       );
-    },
-    // Busca imagens extras se existirem
-    imagensCategoriaAtual() {
-      if (!this.curso.imagens) return [];
-      const objImagens = this.curso.imagens.find(
-        (item) => item.categoriaId === this.categoriaSelecionada.id
-      );
-      return objImagens ? objImagens.imagens : [];
     },
     whatsappLink() {
       const telefone = "5561998385830";
-      const mensagem = encodeURIComponent(`Olá! Gostaria de saber mais sobre o curso: ${this.curso.nome} (${this.categoriaSelecionada.nome})`);
+      const nomeCurso = this.curso.nome || "Curso";
+      const mensagem = encodeURIComponent(`Olá! Gostaria de saber mais sobre o curso: ${nomeCurso}`);
       return `https://wa.me/${telefone}?text=${mensagem}`;
+    }
+  },
+  methods: {
+    // Helper para verificar se array de imagem é válido
+    temImagem(volumeArray) {
+      return Array.isArray(volumeArray) && volumeArray.length > 0;
+    },
+    // Helper para pegar URL da imagem de um array de volumes
+    getImagem(volumeArray) {
+      if (this.temImagem(volumeArray)) {
+        return volumeArray[0].url;
+      }
+      return null;
+    },
+    // Helper específico para a imagem principal com fallback
+    getImagemPrincipal(volumeArray) {
+      const img = this.getImagem(volumeArray);
+      return img || 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=600&q=80';
     }
   }
 };
 </script>
 
 <style scoped>
-.course-details-wrapper {
-  /* Fundo transparente pois o pai (index.vue) já tem fundo escuro. 
-     Se precisar forçar: background-color: #121212; */
-}
-
-/* Título com brilho */
 .text-glow {
   text-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
 }
@@ -227,60 +205,45 @@ export default {
   border-radius: 4px;
 }
 
-/* ==============================
-   ABAS (TABS) - MESMO ESTILO DO INDEX
-   ============================== */
-.v-tab {
-  text-transform: capitalize !important;
-  letter-spacing: 0.5px;
-  color: rgba(255, 255, 255, 0.6) !important;
-  border: 1px solid transparent;
-  margin-bottom: 8px;
-}
-
-.active-tab-glow {
-  background-color: #D32F2F !important;
-  color: white !important;
-  border-color: #D32F2F !important;
-  box-shadow: 0 0 15px rgba(211, 47, 47, 0.4);
-}
-
-::v-deep .v-tabs-slider { display: none !important; }
-
-/* ==============================
-   IMAGEM E CARD
-   ============================== */
 .image-overlay {
   position: absolute;
   bottom: 0; left: 0; width: 100%; height: 50%;
-  background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+  background: linear-gradient(to top, rgba(18,18,18,1), transparent);
   pointer-events: none;
 }
 
-.scrollable-text {
+.line-height-relaxed {
   line-height: 1.8;
-  /* Se o texto for gigante, habilita scroll suave */
-  max-height: 400px;
-  overflow-y: auto;
-  padding-right: 10px;
+  font-size: 1.1rem;
 }
 
-/* Scrollbar fina para o texto */
-.scrollable-text::-webkit-scrollbar {
-  width: 6px;
-}
-.scrollable-text::-webkit-scrollbar-track {
-  background: #121212;
-}
-.scrollable-text::-webkit-scrollbar-thumb {
-  background: #333;
-  border-radius: 3px;
+/* CARDS DOS MÓDULOS */
+.module-card {
+  border: 1px solid rgba(255,255,255,0.05) !important;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Botão com brilho */
-.btn-glow {
-  transition: all 0.3s ease;
+.module-card:hover {
+  transform: translateY(-5px);
+  border-color: rgba(255,255,255,0.1) !important;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important;
 }
+
+/* ÍCONES COM GRADIENTE */
+.icon-circle {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+.bg-red-gradient { background: linear-gradient(135deg, #D32F2F, #ff7961); }
+.bg-blue-gradient { background: linear-gradient(135deg, #1976D2, #64B5F6); }
+.bg-green-gradient { background: linear-gradient(135deg, #388E3C, #81C784); }
+
 .btn-glow:hover {
   transform: translateY(-2px);
   box-shadow: 0 10px 25px rgba(211, 47, 47, 0.4) !important;
@@ -288,9 +251,5 @@ export default {
 
 .hover-back:hover {
   color: white !important;
-}
-
-.transition-swing {
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 </style>
