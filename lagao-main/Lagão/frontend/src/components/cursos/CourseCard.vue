@@ -85,7 +85,7 @@ export default {
     },
     linkWhatsapp() {
       const nomeCurso = encodeURIComponent(this.curso.nome || 'Curso de Mergulho');
-      return `https://api.whatsapp.com/send?phone=55998385830&text=Olá%2C+desejo+mais+informações+a+respeito+do+curso+%2A${nomeCurso}%2A`;
+      return `https://api.whatsapp.com/send?phone=61998385830&text=Olá%2C+desejo+mais+informações+a+respeito+do+curso+%2A${nomeCurso}%2A`;
     }
   }
 };

@@ -506,7 +506,7 @@ export default {
       }
     },
     abrirWhatsapp(expedicao) {
-      const numero = "55998385830";
+      const numero = "61998385830";
 
       const mensagem = `Olá, desejo mais informações a respeito da expedição *${expedicao.local}*`;
       
